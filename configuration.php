@@ -65,7 +65,7 @@ class JConfig {
 	public $smtpport = '25';
 	public $smtpsecure = 'none';
 	public $smtpuser = '';
-	public $tmp_path = '/home/ltdf97ac/public_html/stock/tmp';
+	public $tmp_path = '/home/ltdf97ac666/public_html/stock/tmp';
 	public $unicodeslugs = '0';
 	public $user = 'eddy';
 	public $mailonline = '1';
