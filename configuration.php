@@ -67,7 +67,7 @@ class JConfig {
 	public $smtpuser = '';
 	public $tmp_path = '/home/ltdf97ac/public_html/stock/tmp';
 	public $unicodeslugs = '0';
-	public $user = 'root';
+	public $user = 'eddy';
 	public $mailonline = '1';
 	public $cache_platformprefix = '0';
 	public $shared_session = '0';
