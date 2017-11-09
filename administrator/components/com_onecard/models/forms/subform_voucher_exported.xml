@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form><fieldset>
+ <field name="voucher" type="foreignkey" label="Sản phẩm" description="COM_ONECARD_FORM_DESC_export_voucher_VOUCHER"  foreignkey_table="137" foreignkey_key="1110" foreignkey_value="1146" table="#__onecard_voucher" key_field="id" value_field="title" input_type="list"/>
+                 <field name="price" type="number" label="Giá"  />
+				   <field name="number" type="number" label="Số lượng" default="1" />
+				  
+					 <field name="expired" type="number" label="Hạn sử dụng (ngày)" default="35" description="COM_ONECARD_FORM_DESC_export_voucher_EXPIRED"/>
+
+
+</fieldset></form>

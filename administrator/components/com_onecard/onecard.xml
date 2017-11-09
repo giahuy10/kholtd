@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+    <name>com_onecard</name>
+    <creationDate>2017-09-16 03:15:40</creationDate>
+    <copyright>No copyright</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Not Set</author>
+    <authorEmail>Not Set</authorEmail>
+    <authorUrl></authorUrl>
+    <version>1.0.0</version>
+    <description></description>
+    
+    <scriptfile>script.php</scriptfile>
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/update.mysql.utf8.sql</file>
+        </sql>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+    <files folder="site">
+        <filename>index.html</filename>
+        <filename>onecard.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <folder>views</folder>
+        <folder>models</folder>
+        <folder>controllers</folder>
+        <folder>helpers</folder>
+    </files>
+
+				<languages folder="languages/site">  
+<language tag="en-GB">en-GB/en-GB.com_onecard.ini</language>
+</languages>
+    <media destination="com_onecard" folder="media">
+        <folder>js</folder>
+        <folder>css</folder>
+    </media>
+
+    <administration>
+    	<menu img="media/com_[{com}]/images/s_com_[{com}].png" >COM_ONECARD</menu>
+        <submenu>
+            
+	        <menu link="option=com_onecard&amp;view=brands" view="brands" img="media/com_onecard/images/s_orders.png" alt="Onecard/Brands">
+	        	COM_ONECARD_TITLE_BRANDS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=codes" view="codes" img="media/com_onecard/images/s_orders.png" alt="Onecard/Codes">
+	        	COM_ONECARD_TITLE_CODES
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=contracts" view="contracts" img="media/com_onecard/images/s_orders.png" alt="Onecard/Contracts">
+	        	COM_ONECARD_TITLE_CONTRACTS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=events" view="events" img="media/com_onecard/images/s_orders.png" alt="Onecard/Events">
+	        	COM_ONECARD_TITLE_EVENTS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=export_vouchers" view="export_vouchers" img="media/com_onecard/images/s_orders.png" alt="Onecard/Export_vouchers">
+	        	COM_ONECARD_TITLE_EXPORT_VOUCHERS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=nccs" view="nccs" img="media/com_onecard/images/s_orders.png" alt="Onecard/Nccs">
+	        	COM_ONECARD_TITLE_NCCS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=orders" view="orders" img="media/com_onecard/images/s_orders.png" alt="Onecard/Orders">
+	        	COM_ONECARD_TITLE_ORDERS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=order_vouchers" view="order_vouchers" img="media/com_onecard/images/s_orders.png" alt="Onecard/Order_vouchers">
+	        	COM_ONECARD_TITLE_ORDER_VOUCHERS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=partners" view="partners" img="media/com_onecard/images/s_orders.png" alt="Onecard/Partners">
+	        	COM_ONECARD_TITLE_PARTNERS
+	        </menu>
+
+	        <menu link="option=com_onecard&amp;view=vouchers" view="vouchers" img="media/com_onecard/images/s_orders.png" alt="Onecard/Vouchers">
+	        	COM_ONECARD_TITLE_VOUCHERS
+	        </menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>index.html</filename>
+            <filename>onecard.php</filename>
+            <folder>controllers</folder>
+            <folder>assets</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+        </files>
+
+				<languages folder="languages/administrator">  
+<language tag="en-GB">en-GB/en-GB.com_onecard.ini</language>
+<language tag="en-GB">en-GB/en-GB.com_onecard.sys.ini</language>
+</languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+<!--    <plugins>
+        <plugin group="search" plugin="onecard"/>
+    </plugins>
+    <modules>
+        <module module="mod_onecard" />
+    </modules>   -->
+</extension>
+
+<!-- Magic Has Beed Rendering This Component Via -->
+<!-- http://www.joo-creator.com/ -->

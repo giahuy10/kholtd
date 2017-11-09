@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS `#__onecard_brand`;
+DROP TABLE IF EXISTS `#__onecard_code`;
+DROP TABLE IF EXISTS `#__onecard_contract`;
+DROP TABLE IF EXISTS `#__onecard_event`;
+DROP TABLE IF EXISTS `#__onecard_export_voucher`;
+DROP TABLE IF EXISTS `#__onecard_ncc`;
+DROP TABLE IF EXISTS `#__onecard_order`;
+DROP TABLE IF EXISTS `#__onecard_order_voucher`;
+DROP TABLE IF EXISTS `#__onecard_partner`;
+DROP TABLE IF EXISTS `#__onecard_voucher`;

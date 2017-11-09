@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="state" default="1" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option>
+      <option value="-2">JTRASHED</option>
+    </field>
+    <field name="checked_out" type="hidden" filter="unset"/>
+    <field name="checked_out_time" default="0000-00-00 00:00:00" type="hidden" filter="unset"/>
+    <field name="created_by" type="createdby" default="0" label="COM_INVENTORY_FORM_LBL_VOUCHER_CREATED_BY" description="COM_INVENTORY_FORM_DESC_VOUCHER_CREATED_BY" hidden="true" hint="COM_INVENTORY_FORM_LBL_VOUCHER_CREATED_BY"/>
+    <field name="modified_by" type="modifiedby" default="0" label="COM_INVENTORY_FORM_LBL_VOUCHER_MODIFIED_BY" description="COM_INVENTORY_FORM_DESC_VOUCHER_MODIFIED_BY" hidden="true" hint="COM_INVENTORY_FORM_LBL_VOUCHER_MODIFIED_BY"/>
+    <field name="code" type="text" label="COM_INVENTORY_FORM_LBL_VOUCHER_CODE" description="COM_INVENTORY_FORM_DESC_VOUCHER_CODE" hint="COM_INVENTORY_FORM_LBL_VOUCHER_CODE"/>
+    <field name="value" filter="safehtml" type="text" label="COM_INVENTORY_FORM_LBL_VOUCHER_VALUE" description="COM_INVENTORY_FORM_DESC_VOUCHER_VALUE" hint="COM_INVENTORY_FORM_LBL_VOUCHER_VALUE"/>
+    <field name="merchent" extension="com_inventory" type="category" label="COM_INVENTORY_FORM_LBL_VOUCHER_MERCHENT" description="COM_INVENTORY_FORM_DESC_VOUCHER_MERCHENT" hint="COM_INVENTORY_FORM_LBL_VOUCHER_MERCHENT"/>
+    <field name="expired" class="inputbox" timeformat="12" filter="server_utc" showtime="false" singleheader="false" todaybutton="false" weeknumbers="false" filltable="false" type="calendar" label="COM_INVENTORY_FORM_LBL_VOUCHER_EXPIRED" description="COM_INVENTORY_FORM_DESC_VOUCHER_EXPIRED" hint="COM_INVENTORY_FORM_LBL_VOUCHER_EXPIRED"/>
+    <field name="event" filter="safehtml" type="text" label="COM_INVENTORY_FORM_LBL_VOUCHER_EVENT" description="COM_INVENTORY_FORM_DESC_VOUCHER_EVENT" hint="COM_INVENTORY_FORM_LBL_VOUCHER_EVENT"/>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>

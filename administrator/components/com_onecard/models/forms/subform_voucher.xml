@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+<fieldset>
+ <field name="partner" type="foreignkey" label="Đối tác" description="Đối tác" required="true" foreignkey_table="135" foreignkey_key="1103" foreignkey_value="1144" table="#__onecard_partner" key_field="id" value_field="title" input_type="list"/>
+ 
+				
+	<field name="price" type="number" label="Giá bán" description="Giá bán" />
+					
+
+
+</fieldset>
+</form>
