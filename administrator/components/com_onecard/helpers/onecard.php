@@ -448,6 +448,8 @@ class OnecardHelper extends OnecardHelpersOnecard
 		}
 			
 	} 
+
+
 	public static function export_codes ($merchant, $value, $expired, $number){
 		$db = JFactory::getDbo();
 
@@ -462,7 +464,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 			->from($db->quoteName('#__onecard_code', 'a'))
 			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
 			->where($db->quoteName('b.brand') . ' = '.$merchant)
-			->where($db->quoteName('b.value') . ' = '.$value)
+			->where($db->quoteName('b.value') . ' = '.$db->quote($value))
 			->where($db->quoteName('a.expired') . ' >= '.$db->quote($expired))
 			->where($db->quoteName('a.status') . ' = 1')
 			->order($db->quoteName('a.expired') . ' ASC');
