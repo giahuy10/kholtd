@@ -205,6 +205,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadObject();
+		Onecardhelper::log_sql("get_voucher_detail",$query->__toString());
 		return ($results);
 	}
 	public static function get_voucher_price ($voucher_id, $partner_id) {
@@ -226,6 +227,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
+		Onecardhelper::log_sql("get_voucher_price",$query->__toString());
 		return ($results);
 	}
 	public static function check_voucher_export($export_id, $voucher_id){
@@ -247,6 +249,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 
 	// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 	$results = $db->loadResult();
+	Onecardhelper::log_sql("check_voucher_export",$query->__toString());
 	return($results);
 	}
 	public static function get_type_name($id) {
@@ -335,6 +338,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		$num_rows = $db->getNumRows();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
+		Onecardhelper::log_sql("get_number_of_voucher",$query->__toString());
 		return ($num_rows);
 	}
 	public static function get_code_need_renew ($voucher_id) {
@@ -351,7 +355,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 				$query->where($db->quoteName('voucher') . ' = '. $voucher_id);
 				$query->group($db->quoteName('created'));
 				$db->setQuery($query);
-		
+				Onecardhelper::log_sql("get_code_need_renew",$query->__toString());
 				// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 				$results = $db->loadObjectlist();
 				return ($results);
@@ -433,6 +437,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
+		Onecardhelper::log_sql("get_max_id",$query->__toString());
 		if ($results) {
 			$results++;
 			return ($results);
@@ -467,6 +472,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$exported = $db->loadObjectList();	
+		Onecardhelper::log_sql("export_codes",$query->__toString());
 		return ($exported);
 	}
 	public static function export_codes_by_voucher ($voucher, $expired, $number){
@@ -498,7 +504,9 @@ class OnecardHelper extends OnecardHelpersOnecard
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$exported = $db->loadColumn();	
+		Onecardhelper::log_sql("export_codes_by_voucher",$query->__toString());
 		return ($exported);
+
 	}
 	public static function get_voucher_id ($brand_id, $value) {
 		// Get a db connection.
@@ -520,6 +528,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
+		Onecardhelper::log_sql("get_voucher_id",$query->__toString());
 		return ($results);
 	}
 	
@@ -575,6 +584,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 
 			// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 			$results = $db->loadResult();
+			Onecardhelper::log_sql("check_code",$query->__toString());
 			return ($results);
 	} 
 	public function get_export_detail($voucher_id, $exported_id) {
@@ -591,6 +601,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 				$query->where($db->quoteName('voucher') . ' = '.$voucher_id);
 				$db->setQuery($query);
 				$detail = $db->loadResult();
+				Onecardhelper::log_sql("get_export_detail",$query->__toString());
 				return $detail;
 	}
 	public function change_code_status ($export_id){
@@ -636,6 +647,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 					}
 
 				}
+				Onecardhelper::log_sql("change_code_status",$query->__toString());
 				
 	}
 	public static function log_sql ($function_name, $query) {
