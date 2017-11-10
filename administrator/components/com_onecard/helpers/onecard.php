@@ -542,9 +542,10 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-
+		Onecardhelper::log_sql("get_merchant_name",$query->__toString());
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
+
 		return ($results);
 	}
 	
@@ -636,5 +637,14 @@ class OnecardHelper extends OnecardHelpersOnecard
 
 				}
 				
+	}
+	public static function log_sql ($function_name, $query) {
+		$profile = new stdClass();
+		$profile->function = $function_name;
+		$profile->query=$query;
+		
+		
+		// Insert the object into the user profile table.
+		$result = JFactory::getDbo()->insertObject('#__onecard_log_function', $profile);
 	}
 }
