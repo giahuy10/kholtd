@@ -60,7 +60,7 @@ $query = $db->getQuery(true);
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
 	->join('INNER', $db->quoteName('#__onecard_brand', 'd') . ' ON (' . $db->quoteName('c.brand') . ' = ' . $db->quoteName('d.id') . ')')
 	->join('INNER', $db->quoteName('#__onecard_ncc', 'e') . ' ON (' . $db->quoteName('d.ncc') . ' = ' . $db->quoteName('e.id') . ')');
-
+  
 	if ($date_from)
 	//$query->where('DATE('.$db->quoteName('b.created') . ') >= '.$db->quote($date_from));
  	if ($date_to)

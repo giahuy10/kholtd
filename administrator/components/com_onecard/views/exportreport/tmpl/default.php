@@ -58,7 +58,7 @@ $query = $db->getQuery(true);
 // Select all articles for users who have a username which starts with 'a'.
 // Order it by the created date.
 // Note by putting 'a' as a second parameter will generate `#__content` AS `a`
-
+  
 	$query
     ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'a.number as quantity', 'a.price as price', 'b.event', 'c.type', 'a.expired', 'f.title as partner', 'e.title as event','c.unit as unit' ,'b.created as exported_date','f.id as partner_id' ))
     ->from($db->quoteName('#__onecard_export_voucher_detail', 'a'))

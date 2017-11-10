@@ -47,7 +47,11 @@
     <field name="expired" showon="type:1,2,4"  type="calendar" label="Hạn sử dụng" description="COM_ONECARD_FORM_DESC_voucher_EXPIRED" />
 	  <field name="started" showon="type:1,2,4"  type="calendar" label="Ngày có hiệu lực" description="COM_ONECARD_FORM_DESC_voucher_STARTED" />
     <field name="description" type="editor" label="Mô tả" description="COM_ONECARD_FORM_DESC_voucher_DESCRIPTION" filter="safehtml"/>
-    <field name="brand" type="foreignkey" label="Nhãn hiệu" description="COM_ONECARD_FORM_DESC_voucher_BRAND" required="true" foreignkey_table="133" foreignkey_key="1089" foreignkey_value="1136" table="#__onecard_brand" key_field="id" value_field="title" input_type="list"/>
+    <field name="brand" type="foreignkey" label="Nhãn hiệu" 
+    description="COM_ONECARD_FORM_DESC_voucher_BRAND" required="true" 
+    foreignkey_table="133" foreignkey_key="1089" foreignkey_value="1136" 
+    table="#__onecard_brand" key_field="id" value_field="title" 
+    input_type="list"/>
     <field name="filter_brand" type="sql" label="COM_ONECARD_SELECT_LBL_VOUCHER_BRAND" key_field="key_field" value_field="value_field" class="inputbox" onchange="this.form.submit()" translate="true" query="SELECT '' AS `key_field`, &#9;'COM_ONECARD_SELECT_LBL_VOUCHER_BRAND' &#9;AS `value_field`  UNION  SELECT  `id` &#9;AS key_field ,  `title` &#9;AS value_field  FROM `#__onecard_brand` "/>
   </fieldset>
 </form>

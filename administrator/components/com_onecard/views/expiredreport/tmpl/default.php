@@ -36,7 +36,7 @@ $query
   
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
 	->join('INNER', $db->quoteName('#__onecard_brand', 'd') . ' ON (' . $db->quoteName('c.brand') . ' = ' . $db->quoteName('d.id') . ')')
-	
+	 
     ->where($db->quoteName('a.status') . ' = 1');
 	if ($onecard_voucher)
 		$query->where($db->quoteName('c.id') . ' = '.$onecard_voucher);

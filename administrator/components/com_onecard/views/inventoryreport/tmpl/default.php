@@ -31,7 +31,7 @@ $query = $db->getQuery(true);
 $query
     ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'c.input_price as price', 'c.type', 'c.expired' ,'c.unit as unit' ))
     ->from($db->quoteName('#__onecard_code', 'a'))
-  
+    
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
 	->join('INNER', $db->quoteName('#__onecard_brand', 'd') . ' ON (' . $db->quoteName('c.brand') . ' = ' . $db->quoteName('d.id') . ')');
 	if ($onecard_voucher)

@@ -1,9 +1,8 @@
 <?php
 $task = JRequest::getVar('task');
-$voucher = JRequest::getVar('voucher');
-$voucher = str_replace(" ","",$voucher);
-$voucher = explode(",",$voucher);
 
+$data = file_get_contents("php://input");
+$data = json_decode($data);
 function get_expired ($voucher, $exported_id) {
 	// Get a db connection.
 	$db = JFactory::getDbo();
@@ -26,23 +25,29 @@ function get_expired ($voucher, $exported_id) {
 	$results = $db->loadResult();
 	return $results;
 }
-function check_code($code, $type, $used_location = NULL) {
+function check_code($code, $type, $merchantoc, $used_location = NULL) {
+	$brand_id = get_brand_id($merchantoc);
 	$db = JFactory::getDbo();	
 	// Create a new query object.
 	$query = $db->getQuery(true);	
 	// Select all records from the user profile table where key begins with "custom.".
 	// Order it by the ordering field.
-	$query->select($db->quoteName(array('a.id', 'code', 'barcode', 'serial','a.status','b.title','a.voucher','a.exported_id')));
+	$query->select($db->quoteName(array('a.id', 'code', 'barcode', 'serial','a.status','b.title','a.voucher','a.exported_id','b.brand')));
 	$query->from($db->quoteName('#__onecard_code','a'));
 	$query->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')');
+	//$query->join('INNER', $db->quoteName('#__onecard_brand', 'c') . ' ON (' . $db->quoteName('b.brand') . ' = ' . $db->quoteName('c.id') . ')');
 	$query->where($db->quoteName('code') . ' = '. $db->quote($code));
 	// Reset the query using our newly populated query object.
 	$db->setQuery($query);
 	// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 	$result = $db->loadObject();
-	
+	  
 	if ($result) {
-		if ($result->status == 3) {
+		if ($result->brand != $brand_id) {
+			$response->status = -1;
+			$response->message = "Ma code ".$code." khong duoc ap dung tai dia diem nay";
+			$response->data = NULL;
+		}elseif ($result->status == 3) {
 			$response->status = -1;
 			$response->message = "Ma code ".$code." da duoc su dung";
 			$response->data = NULL;
@@ -93,66 +98,113 @@ function get_voucher_id ($eventoc) {
 	$result = $db->loadResult();
 	return ($result);
 }
+function get_brand_id ($merchantoc) {
+	$db = JFactory::getDbo();	
+	// Create a new query object.
+	$query = $db->getQuery(true);	
+	// Select all records from the user profile table where key begins with "custom.".
+	// Order it by the ordering field.
+	$query->select($db->quoteName('id'));
+	$query->from($db->quoteName('#__onecard_brand'));
+
+	$query->where($db->quoteName('merchantoc') . ' = '. $merchantoc);
+	// Reset the query using our newly populated query object.
+	$db->setQuery($query);
+	// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+	$result = $db->loadResult();
+	return ($result);
+}
 function export_codes_by_eventoc ($eventoc, $expired, $number){
 	$voucher = get_voucher_id($eventoc);
-	$db = JFactory::getDbo();
+	if ($voucher) {
+		$db = JFactory::getDbo();
 
-	// Create a new query object.
-	$query = $db->getQuery(true);
+		// Create a new query object.
+		$query = $db->getQuery(true);
 
-	// Select all articles for users who have a username which starts with 'a'.
-	// Order it by the created date.
-	// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
-	$query
-		->select(array('a.code','a.barcode','a.serial'))
-		->from($db->quoteName('#__onecard_code', 'a'))
-		->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
-		
-		->where($db->quoteName('a.voucher') . ' = '.$voucher)
-		->where($db->quoteName('a.expired') . ' >= '.$db->quote($expired))
-		->where($db->quoteName('a.status') . ' = 1')
-		->where($db->quoteName('a.state') . ' = 1')
-		->where($db->quoteName('b.state') . ' = 1')
-		->order($db->quoteName('a.expired') . ' ASC');
+		// Select all articles for users who have a username which starts with 'a'.
+		// Order it by the created date.
+		// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
+		$query
+			->select(array('a.code','a.barcode','a.serial'))
+			->from($db->quoteName('#__onecard_code', 'a'))
+			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
+			
+			->where($db->quoteName('a.voucher') . ' = '.$voucher)
+			->where($db->quoteName('a.expired') . ' >= '.$db->quote($expired))
+			->where($db->quoteName('a.status') . ' = 1')
+			->where($db->quoteName('a.state') . ' = 1')
+			->where($db->quoteName('b.state') . ' = 1')
+			->order($db->quoteName('a.expired') . ' ASC');
 
-	// Reset the query using our newly populated query object.
-	$db->setQuery($query,0,$number);
-	//echo $query->__toString();
-	// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-	$exported = $db->loadObjectlist();	
-	if (count($exported) < $number) {
-		$response->status = -1;
-		$response->message = "Khong du so luong code phu hop";
-		$response->data = NULL;
+		// Reset the query using our newly populated query object.
+		$db->setQuery($query,0,$number);
+		//echo $query->__toString();
+		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+		$exported = $db->loadObjectlist();	
+		if (count($exported) < $number) {
+			$response->status = -1;
+			$response->message = "Khong du so luong code phu hop";
+			$response->data = NULL;
+		}else {
+			$response->status = 1;
+			$response->message = "Success";
+			$response->data = $exported;
+		}
 	}else {
-		$response->status = 1;
-		$response->message = "Success";
-		$response->data = $exported;
-	}
+		$response->status = -1;
+		$response->message = "Khong tim thay su kien";
+		$response->data = NULL;
+	}	
 	
 	return $response;
 }
 $response = array();
 switch ($task) {
+
+	/* JSON 
+	
+		[
+			"merchant_id": "24",
+			"codes": "code1, code2, code3",
+			"active_location":"location_id"
+
+		]
+	*/
 	case "check":
-		
-		foreach ($voucher as $code) {
+		$merchant_id = $data->merchant;
+		$codes = $data->codes;
+		$codes = str_replace(" ","",$codes);
+		$codes = explode(",",$codes);
+		foreach ($codes as $code) {
 			$code = trim($code);
 			$response[$code] = check_code($code,"check");
 		}
 	
 		break;
 	case "active":
-		$used_location = JRequest::getVar('active_location');
-		foreach ($voucher as $code) {
+		
+		$merchant_id = $data->merchant;
+		$codes = $data->codes;
+		$codes = str_replace(" ","",$codes);
+		$codes = explode(",",$codes);
+		$used_location = $data->active_location;
+		foreach ($codes as $code) {
 			$code = trim($code);
 			$response[$code] = check_code($code,"active",$used_location);
 		}
 		
 		break;
 	case "get": 
-		$data = file_get_contents("php://input");
-		$data = json_decode($data);
+		/* JSON
+			[
+				{"id":"241","expired":"2017-11-11","quantity":"2"},
+				{"id":"242","expired":"2017-11-11","quantity":"2"}
+			
+			]	
+		*/
+
+		
 		foreach ($data as $item) {
 			$response[$item->id] = export_codes_by_eventoc($item->id, $item->expired, $item->quantity);
 		}

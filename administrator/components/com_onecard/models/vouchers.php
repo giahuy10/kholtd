@@ -252,7 +252,7 @@ class OnecardModelVouchers extends JModelList
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
 					$query
-							->select($db->quoteName('title'))
+							->select($db->quoteName('title')) 
 							->from('`#__onecard_brand`')
 							->where($db->quoteName('id') . ' = '. $db->quote($db->escape($value)));
 					$db->setQuery($query);
