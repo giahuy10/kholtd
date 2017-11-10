@@ -528,7 +528,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 	
 
 	public static function get_merchant_name ($id) {
-		// Get a db connection.
+		// Get a db connection. 
 		$db = JFactory::getDbo();
 
 		// Create a new query object.

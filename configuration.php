@@ -16,7 +16,7 @@ class JConfig {
 	public $db = 'kholtd';
 	public $dbprefix = 'josde_';
 	public $dbtype = 'mysqli';
-	public $debug = '0';
+	public $debug = '1';
 	public $debug_lang = '0';
 	public $display_offline_message = '1';
 	public $editor = 'tinymce';
@@ -37,7 +37,7 @@ class JConfig {
 	public $lifetime = '60';
 	public $list_limit = '20';
 	public $live_site = '';
-	public $log_path = '/home/ltdf97ac/public_html/stock/administrator/logs';
+	public $log_path = '/var/www/kho/public_html/administrator/logs';
 	public $mailer = 'mail';
 	public $mailfrom = 'admin@stock.ltdvietnam.com';
 	public $memcache_compress = '0';

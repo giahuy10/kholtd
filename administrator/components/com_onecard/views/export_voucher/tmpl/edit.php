@@ -3,7 +3,7 @@
   * @version    1.0.0
   * @package    com_onecard
   * @author     Not Set <Not Set>
-  * @copyright  No copyright
+  * @copyright  No copyright 
   * @license    GNU General Public License version 2 or later; see LICENSE.txt
   */
 // No direct access
