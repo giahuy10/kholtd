@@ -62,6 +62,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 <?php echo $this->form->renderField('created_by'); ?>
 <?php echo $this->form->renderField('modified_by'); ?>
 <?php echo $this->form->renderField('title'); ?>
+<?php echo $this->form->renderField('merchantoc'); ?>
 <?php echo $this->form->renderField('ncc'); ?>
 <?php echo $this->form->renderField('phone'); ?>
 <?php echo $this->form->renderField('address'); ?>

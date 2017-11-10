@@ -61,6 +61,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 <?php echo $this->form->renderField('checked_out_time'); ?>
 
 <?php echo $this->form->renderField('title'); ?>
+<?php echo $this->form->renderField('eventoc'); ?>
 <?php echo $this->form->renderField('type'); ?>
 <?php echo $this->form->renderField('unit'); ?>
 <?php echo $this->form->renderField('discount_type'); ?>

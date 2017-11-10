@@ -14,6 +14,7 @@
     <field name="created_by" type="createdby" label="COM_ONECARD_FORM_LBL_brand_CREATED_BY" description="COM_ONECARD_FORM_DESC_brand_CREATED_BY"/>
     <field name="modified_by" type="modifiedby" label="COM_ONECARD_FORM_LBL_brand_MODIFIED_BY" description="COM_ONECARD_FORM_DESC_brand_MODIFIED_BY"/>
     <field name="title" type="text" label="Nhãn hiệu" description="COM_ONECARD_FORM_DESC_brand_TITLE" required="true"/>
+    <field name="merchantoc" type="merchantoc" label="Merchant trên OneCard"/>
     <field name="phone" type="text" label="Điện thoại" description="COM_ONECARD_FORM_DESC_brand_PHONE"/>
     <field name="address" type="text" label="Địa chỉ" description="COM_ONECARD_FORM_DESC_brand_ADDRESS"/>
     <field name="description" type="editor" label="Thông tin chi tiết" description="COM_ONECARD_FORM_DESC_brand_DESCRIPTION"/>
