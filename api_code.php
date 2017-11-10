@@ -77,7 +77,24 @@ function check_code($code, $type, $used_location = NULL) {
 	}
 	return $response;
 }
-function export_codes_by_voucher ($voucher, $expired, $number){
+function get_voucher_id ($eventoc) {
+	$db = JFactory::getDbo();	
+	// Create a new query object.
+	$query = $db->getQuery(true);	
+	// Select all records from the user profile table where key begins with "custom.".
+	// Order it by the ordering field.
+	$query->select($db->quoteName('id'));
+	$query->from($db->quoteName('#__onecard_voucher'));
+
+	$query->where($db->quoteName('eventoc') . ' = '. $eventoc);
+	// Reset the query using our newly populated query object.
+	$db->setQuery($query);
+	// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+	$result = $db->loadResult();
+	return ($result);
+}
+function export_codes_by_eventoc ($eventoc, $expired, $number){
+	$voucher = get_voucher_id($eventoc);
 	$db = JFactory::getDbo();
 
 	// Create a new query object.
@@ -137,7 +154,7 @@ switch ($task) {
 		$data = file_get_contents("php://input");
 		$data = json_decode($data);
 		foreach ($data as $item) {
-			$response[$item->id] = export_codes_by_voucher($item->id, $item->expired, $item->quantity);
+			$response[$item->id] = export_codes_by_eventoc($item->id, $item->expired, $item->quantity);
 		}
 		
 		break;
