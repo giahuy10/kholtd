@@ -14,6 +14,7 @@ class JFormFieldMerchantoc extends JFormFieldList {
         $data = json_decode($json);
        // $app = JFactory::getApplication();
         $id = JRequest::getVar('id'); //country is the dynamic value which is being used in the viewv
+        if ($id) {
         $db = JFactory::getDbo();
         
         // Create a new query object.
@@ -31,7 +32,7 @@ class JFormFieldMerchantoc extends JFormFieldList {
         
         // Load the results as a list of stdClass objects (see later for more options on retrieving data).
         $current_id = $db->loadResult();
-
+        }
         $events = $data->data;
         $html = '<select id="'.$this->id.'" name="'.$this->name.'">';
                 $html.='<option value="">Chon Merchant OC</option>';

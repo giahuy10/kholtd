@@ -42,6 +42,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
     }
 </script>
 
+
 <form
     action="<?php echo JRoute::_('index.php?option=com_onecard&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="voucher-form" class="form-validate">
