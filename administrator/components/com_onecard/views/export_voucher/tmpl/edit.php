@@ -261,7 +261,7 @@ echo $this->form->renderField('list_templates'); ?>
 		
 		$remove_row = 0;
 		foreach ($rows as $check_row) {
-			if ($remove_row > 0) {
+			if ($remove_row > 0 && $check_row[0] != "") {
 				$check_nr = $check_row[0];	
 				$check_client = $check_row[1];
 				$check_merchant_id = $check_row[3];
@@ -357,7 +357,7 @@ echo $this->form->renderField('list_templates'); ?>
 		$export_tpb[0]=$array_title_tpb;
 		$data_json = "";
 		foreach ($rows as $row) {
-				if ($count_insert>0) {
+				if ($count_insert>0 && $row[0]!="") {
 						$exported_code = new stdClass();
 						$nr = $row[0];	
 						$client = $row[1];
