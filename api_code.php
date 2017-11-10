@@ -178,7 +178,7 @@ switch ($task) {
 		$codes = explode(",",$codes);
 		foreach ($codes as $code) {
 			$code = trim($code);
-			$response[$code] = check_code($code,"check");
+			$response[$code] = check_code($code,"check",$merchant_id);
 		}
 	
 		break;
@@ -191,7 +191,7 @@ switch ($task) {
 		$used_location = $data->active_location;
 		foreach ($codes as $code) {
 			$code = trim($code);
-			$response[$code] = check_code($code,"active",$used_location);
+			$response[$code] = check_code($code,"active",$merchant_id,$used_location);
 		}
 		
 		break;
