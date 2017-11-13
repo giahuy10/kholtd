@@ -410,7 +410,7 @@ echo $this->form->renderField('list_templates'); ?>
 							$code_value = "'";
 						foreach ($exported as $code) {
 							if ($type == 1)
-								$code_value .= 'Voucher('.$code->code.')/PIN('.$code->barcode.')';
+								$code_value .= 'Voucher('.$code->code.')/PIN('.$code->serial.')';
 							else
 								$code_value .= $code->code;
 							$z++;
