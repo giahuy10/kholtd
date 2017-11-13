@@ -461,7 +461,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		// Order it by the created date.
 		// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 		$query
-			->select(array('a.code','a.barcode','a.id'))
+			->select(array('a.code','a.barcode','a.id','a.serial'))
 			->from($db->quoteName('#__onecard_code', 'a'))
 			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
 			->where($db->quoteName('b.brand') . ' = '.$merchant)
