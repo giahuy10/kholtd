@@ -10,7 +10,7 @@ class JFormFieldEventoc extends JFormFieldList {
 	protected $type = 'Eventoc';
 
     public function getInput() {
-        $json = file_get_contents('https://onecard.vn/api.php?act=item&code=list&evoucher=1');      
+        $json = file_get_contents('https://onecard.vn/api.php?act=item&code=list&evoucher=1&is_all=1');      
         $data = json_decode($json);
        // $app = JFactory::getApplication();
         $id = JRequest::getVar('id'); //country is the dynamic value which is being used in the viewv
