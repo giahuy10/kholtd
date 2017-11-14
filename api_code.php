@@ -65,7 +65,7 @@ function check_code($codes, $type, $merchantoc, $used_location = NULL) {
 				$response[$code]->status = 1;
 				$response[$code]->message = "Mã code ".$code." hợp lệ! ";
 				if ($type == "active") {
-					$response->message .= "Kích hoạt thành công!";
+					$response[$code]->message .= "Kích hoạt thành công!";
 					$object = new stdClass();
 					// Must be a valid primary key value.
 					$object->id = $result->id;
