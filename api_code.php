@@ -45,27 +45,27 @@ function check_code($codes, $type, $merchantoc, $used_location = NULL) {
 		$result = $db->loadObject();
 		
 		if ($result) {
-			if ($result->brand != $brand_id) {
-				$response->status = -1;
-				$response->message = "Ma code ".$code." khong duoc ap dung tai dia diem nay";
-				$response->data = NULL;
+			if ($result->brand != 55 && $result->brand != $brand_id) {
+				$response[$code]->status = -1;
+				$response[$code]->message = "Mã code ".$code." không áp dụng tại địa điểm này";
+				
 			}elseif ($result->status == 3) {
-				$response->status = -1;
-				$response->message = "Ma code ".$code." da duoc su dung";
-				$response->data = NULL;
+				$response[$code]->status = -1;
+				$response[$code]->message = "Mã code ".$code." đã được sử dụng";
+				//$response->data = NULL;
 			}elseif (!$result->exported_id) {
-				$response->status = -1;
-				$response->message = "Ma code ".$code." chua duoc ban";
-				$response->data = NULL;
+				$response[$code]->status = -1;
+				$response[$code]->message = "Mã code ".$code." chưa được bán";
+				//$response->data = NULL;
 			}elseif (strtotime(get_expired($result->voucher, $result->exported_id)) < strtotime(date("Y-m-d"))){
-				$response->status = -1;
-				$response->message = "Ma code ".$code." da het han su dung";
-				$response->data = NULL;
+				$response[$code]->status = -1;
+				$response[$code]->message = "Mã code ".$code." đã hết hạn sử dụng";
+				//$response->data = NULL;
 			}else {
-				$response->status = 1;
-				$response->message = "Ma code ".$code." hop le! ";
+				$response[$code]->status = 1;
+				$response[$code]->message = "Mã code ".$code." hợp lệ! ";
 				if ($type == "active") {
-					$response->message .= "Kich hoat thanh cong!";
+					$response->message .= "Kích hoạt thành công!";
 					$object = new stdClass();
 					// Must be a valid primary key value.
 					$object->id = $result->id;
@@ -75,18 +75,18 @@ function check_code($codes, $type, $merchantoc, $used_location = NULL) {
 					// Update their details in the users table using id as the primary key.
 					$active_code = JFactory::getDbo()->updateObject('#__onecard_code', $object, 'id');
 				}
-				$response->data = $result;
+				//$response->data = $result;
 			}
 		}else {
-			$response->status = -1;
-			$response->message = "Khong tim thay ma code ".$code;
-			$response->data = NULL;
+			$response[$code]->status = -1;
+			$response[$code]->message = "Không tìm thấy mã code ".$code;
+			//$response[$code]->data = NULL;
 		}
 	}
-	$response->status = 1;
-	$response->message = "Success";
-	$response->data = $data;
-	return $response;
+	$data->status = 1;
+	$data->message = "Success";
+	$data->data = $response;
+	return $data;
 }
 function get_voucher_id ($eventoc) {
 	$db = JFactory::getDbo();	
