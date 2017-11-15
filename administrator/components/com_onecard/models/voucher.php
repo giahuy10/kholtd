@@ -104,6 +104,7 @@ class OnecardModelVoucher extends JModelAdmin
             }
 
             $data = $this->item;
+            $data->eventoc = explode(',', $data->eventoc);
         }
 
         return $data;

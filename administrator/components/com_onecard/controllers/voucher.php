@@ -29,6 +29,23 @@ class OnecardControllervoucher extends JControllerForm
 		$this->view_list = 'vouchers';
 		parent::__construct();
 	}
+	public static function delete_record ($table,  $value) {
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true);
+
+	// delete all custom keys for user 1001.
+		$conditions = array(
+			$db->quoteName('voucher') . ' = '. $value
+		);
+
+		$query->delete($db->quoteName('#__'. $table));
+		$query->where($conditions);
+
+		$db->setQuery($query);
+
+		$result = $db->execute();
+	}
 	protected function postSaveHook(JModelLegacy $model, $validData=array()){
 		$user = JFactory::getUser();
 		
@@ -46,6 +63,18 @@ class OnecardControllervoucher extends JControllerForm
 				$result = JFactory::getDbo()->insertObject('#__onecard_voucher_price', $tupel);
 				
 					
+			}
+		}
+		if (!empty($validData['eventoc'])) {
+			$eventoc = new stdClass;
+			$eventoc->voucher = (int)$validData['id'];
+			self::delete_record("onecard_voucher_event", $eventoc->voucher);
+			
+			//$tupel->created_by = $user->id;
+			
+			foreach ($validData['eventoc'] as $tmp) {
+				$eventoc->event = $tmp;
+				$result = JFactory::getDbo()->insertObject('#__onecard_voucher_event', $eventoc);
 			}
 		}
 	}

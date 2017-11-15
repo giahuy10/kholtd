@@ -35,7 +35,7 @@
       <option value="1">Yes</option>
 	 
     </field>
-    <field name="eventoc" type="eventoc" label="Sự kiện trên OneCard"/>
+    <field name="eventoc" type="eventoc" label="Sự kiện trên OneCard" multiple="multiple" filter="safehtml"/>
 	<field name="quantity" type="number" showon="type:3" label="Số lượng" description="COM_ONECARD_FORM_LBL_voucher_QUANTITY"/>
     <field name="value" type="number" label="Giá trị" description="COM_ONECARD_FORM_DESC_voucher_VALUE" required="true"/>
     <field name="input_price" type="number" label="Giá nhập" description="COM_ONECARD_FORM_DESC_voucher_INPUT_PRICE" required="true"/>
