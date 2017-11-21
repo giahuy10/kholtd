@@ -148,6 +148,37 @@ class OnecardHelpersOnecard
 class OnecardHelper extends OnecardHelpersOnecard
 	
 {
+	public static function  postCurl($url, $var)
+	{
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => $url,
+			CURLOPT_SSL_VERIFYPEER => false,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_POSTFIELDS => $var,
+			CURLOPT_HTTPHEADER => array(
+				"cache-control: no-cache",
+				"content-type: application/json"
+			),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			return "cURL Error #:" . $err;
+		} else {
+			return $response;
+			
+		}
+	}	
 	public static function export_excel($data = NULL, $title) {
 		require_once (JPATH_COMPONENT.'/libs/PHPExcel.php');
 		require_once (JPATH_COMPONENT.'/libs/PHPExcel/Writer/Excel2007.php');
@@ -186,6 +217,28 @@ class OnecardHelper extends OnecardHelpersOnecard
 		$objWriter->save('php://output');
 		exit;
 	}	
+	public static function get_number_of_codes_exported_to_onecard($voucher_id)
+	{
+		$db = JFactory::getDbo();
+
+// Create a new query object.
+		$query = $db->getQuery(true);
+
+// Select all records from the user profile table where key begins with "custom.".
+// Order it by the ordering field.
+		//$query = "SELECT SUM(number) FROM #__onecard_export_voucher_detail where voucher="
+		$query->select('sum(' . $db->quoteName('number') . ')');
+		$query->from($db->quoteName('#__onecard_export_voucher_detail'));
+		$query->where($db->quoteName('voucher') . ' = ' . $voucher_id);
+
+		$query->where($db->quoteName('is_onecard') . ' = 1');
+
+// Reset the query using our newly populated query object.
+		$db->setQuery($query);
+		$results = $db->loadResult();
+
+		return ($results);
+	}
 	public static function get_voucher_detail ($voucher_id) {
 		$db = JFactory::getDbo();
 		
@@ -314,7 +367,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 	
 		
 	}
-	public static function get_number_of_voucher ($voucher_id, $status=NULL) {
+	public static function get_number_of_voucher ($voucher_id, $status=NULL, $price, $created = NULL, $expired = NULL) {
 		
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -330,6 +383,13 @@ class OnecardHelper extends OnecardHelpersOnecard
 			$query->where($db->quoteName('status') . ' = '. $status);
 		$query->where($db->quoteName('voucher') . ' = '. $voucher_id);
 		$query->where($db->quoteName('state') . ' = 1');
+		$query->where($db->quoteName('input_price') . ' = '. $price);
+		if ($created) {
+			$query->where($db->quoteName('created') . ' = ' . $db->quote($created));
+		}
+		if ($expired) {
+			$query->where($db->quoteName('expired') . ' = ' . $db->quote($expired));
+		}
 		//$query->order('ordering ASC');
 	
 		// Reset the query using our newly populated query object.
@@ -350,17 +410,17 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 				// Select all records from the user profile table where key begins with "custom.".
 				// Order it by the ordering field.
-				$query->select('COUNT(*) as total, created, expired');
+				$query->select('COUNT(*) as total, created, expired','input_price');
 				$query->from($db->quoteName('#__onecard_code'));
 				$query->where($db->quoteName('voucher') . ' = '. $voucher_id);
 				$query->group($db->quoteName('created'));
 				$db->setQuery($query);
-				Onecardhelper::log_sql("get_code_need_renew",$query->__toString());
+				//Onecardhelper::log_sql("get_code_need_renew",$query->__toString());
 				// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 				$results = $db->loadObjectlist();
 				return ($results);
 	}
-	public static function doImport($fileExcel, $voucher_id, $type, $expired){
+	public static function doImport($fileExcel, $voucher_id, $type, $expired, $input_price){
   		require_once (JPATH_COMPONENT.'/libs/simplexlsx.class.php');
 		$xlsx = new SimpleXLSX($fileExcel);		
 		
@@ -385,6 +445,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 						$product[$count_insert]->created_by = $user->id;
 						$product[$count_insert]->voucher = $voucher_id;
 						$product[$count_insert]->status = 1;
+				$product[$count_insert]->input_price = $input_price;
 						$product[$count_insert]->type = $type;
 						$product[$count_insert]->expired = $expired;
 						$product[$count_insert]->created = date("Y-m-d");
@@ -490,7 +551,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		// Order it by the created date.
 		// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 		$query
-			->select($db->quoteName('a.id'))
+			->select($db->quoteName('a.code'))
 			->from($db->quoteName('#__onecard_code', 'a'))
 			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
 			
@@ -554,10 +615,10 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-		Onecardhelper::log_sql("get_merchant_name",$query->__toString());
+		
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$results = $db->loadResult();
-
+		Onecardhelper::log_sql("get_merchant_name", $query->__toString());
 		return ($results);
 	}
 	
@@ -607,6 +668,44 @@ class OnecardHelper extends OnecardHelpersOnecard
 				Onecardhelper::log_sql("get_export_detail",$query->__toString());
 				return $detail;
 	}
+	public static function get_event_oc_id ($voucher_id) {
+		$db = JFactory::getDbo();
+		
+				// Create a new query object.
+		$query = $db->getQuery(true);
+		
+				// Select all records from the user profile table where key begins with "custom.".
+				// Order it by the ordering field.
+		$query->select($db->quoteName('eventoc_export'));
+		$query->from($db->quoteName('#__onecard_voucher'));
+		
+		$query->where($db->quoteName('id') . ' = ' . $voucher_id);
+		//$query->order($db->quoteName('event') . ' DESC');
+
+		$db->setQuery($query);
+		$detail = $db->loadResult();
+		Onecardhelper::log_sql("get_event_oc_id", $query->__toString());
+		return $detail;
+	}
+	public static function get_merchant_oc_id ($brand_id) {
+		$db = JFactory::getDbo();
+		
+				// Create a new query object.
+		$query = $db->getQuery(true);
+		
+				// Select all records from the user profile table where key begins with "custom.".
+				// Order it by the ordering field.
+		$query->select($db->quoteName('merchantoc'));
+		$query->from($db->quoteName('#__onecard_brand'));
+
+		$query->where($db->quoteName('id') . ' = ' . $brand_id);
+		//$query->order($db->quoteName('event') . ' DESC');
+
+		$db->setQuery($query);
+		$detail = $db->loadResult();
+		Onecardhelper::log_sql("get_merchant_oc_id", $query->__toString());
+		return $detail;
+	}
 	public function change_code_status ($export_id){
 		// Get a db connection.
 			$db = JFactory::getDbo();
@@ -616,7 +715,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		
 				// Select all records from the user profile table where key begins with "custom.".
 				// Order it by the ordering field.
-				$query->select($db->quoteName(array('id','voucher','number','expired','exported_id','exported_code')));
+				$query->select($db->quoteName(array('id','voucher','number','expired','exported_id','exported_code','price')));
 				$query->from($db->quoteName('#__onecard_export_voucher_detail'));
 				$query->where($db->quoteName('exported_id') . ' = '.$export_id);
 				$query->where($db->quoteName('exported_code') . ' = 0');
@@ -629,18 +728,41 @@ class OnecardHelper extends OnecardHelpersOnecard
 							echo $detail->id."NO<br/>";
 					}else { // OK
 							// Change status
+							foreach ($exported_code as $item) {
+								$voucher_detail = self::get_voucher_detail($detail->voucher);
+								$post_code = array(
+									'coupon' => $item,
+									'event_id' => self::get_event_oc_id($detail->voucher),
+									'status' => 1,
+									'created' => strtotime(date('Y-m-d 23:59:59')),
+									'merchant_id' => self::get_merchant_oc_id($voucher_detail->brand),
+									'end_time' => strtotime($detail->expired),
+									'price' => $voucher_detail->value,
+									'cart_detail_id' => 82,
+									'customer_id' => 1
+								);
+								$result_post = self::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+							//	Onecardhelper::log_sql("post_url". $item, json_encode($post_code));
+							}
+							if (!$detail->price) {
+								$detail->price = $voucher_detail->value;
+							}
 							$code = implode(",",$exported_code);
+							$update_code = str_replace(',','","', $code);
+							$update_code = '"'. $update_code.'"';
 							$db = JFactory::getDbo();			
 							$query = $db->getQuery(true);
 							$fields = array(
 								$db->quoteName('status') . ' = 2',
 								$db->quoteName('exported_id') . ' = '.$export_id,
-								$db->quoteName('exported_detail_id') . ' = '.$detail->id
+								$db->quoteName('exported_detail_id') . ' = '.$detail->id,
+								$db->quoteName('export_price') . ' = ' . $detail->price
 							);
 							$conditions = array(
-								$db->quoteName('id') . ' IN ('.$code.')'
+								$db->quoteName('code') . ' IN ' . ' (' . $update_code .')'
 							);
 							$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
+						//	Onecardhelper::log_sql("change_code_status", $query->__toString());
 							$db->setQuery($query);			
 							$result = $db->execute();
 
@@ -650,9 +772,10 @@ class OnecardHelper extends OnecardHelpersOnecard
 					}
 
 				}
-				Onecardhelper::log_sql("change_code_status",$query->__toString());
+				
 				
 	}
+	
 	public static function log_sql ($function_name, $query) {
 		$profile = new stdClass();
 		$profile->function = $function_name;

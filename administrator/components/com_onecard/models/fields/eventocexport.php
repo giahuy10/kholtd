@@ -5,9 +5,9 @@ defined('_JEXEC') or die('Restricted access');
 
 JFormHelper::loadFieldClass('list');
 
-class JFormFieldEventoc extends JFormFieldList {
+class JFormFieldEventocexport extends JFormFieldList {
 
-	protected $type = 'Eventoc';
+	protected $type = 'Eventocexport';
 
     public function getInput() {
         $arrContextOptions = array(
@@ -28,7 +28,7 @@ class JFormFieldEventoc extends JFormFieldList {
             
             // Select all records from the user profile table where key begins with "custom.".
             // Order it by the ordering field.
-            $query->select($db->quoteName('eventoc'));
+            $query->select($db->quoteName('eventoc_export'));
             $query->from($db->quoteName('#__onecard_voucher'));
             $query->where($db->quoteName('id') . ' = '. $id);
             
@@ -38,7 +38,7 @@ class JFormFieldEventoc extends JFormFieldList {
             
             // Load the results as a list of stdClass objects (see later for more options on retrieving data).
             $current_id = $db->loadResult();
-            $current_id = explode(",", $current_id);
+           
         }
         
 
@@ -52,15 +52,15 @@ class JFormFieldEventoc extends JFormFieldList {
         $drawField .= '</select>';
         return $drawField;
         */
-       $html = '<select id="'.$this->id.'" name="'.$this->name. '" class="inputbox" size="10" multiple="multiple">';
-                $html.='<option value="">Chọn sự kiện trên OneCard</option>';
-                foreach($events as $row){
-                   if (in_array($row->id, $current_id)) {
+       $html = '<select id="'.$this->id.'" name="'.$this->name. '" class="inputbox" size="10" >';
+             
+                foreach($events as $key => $row){
+                   if ($key = $current_id) {
                        $selected = " selected";
                    }else {
                        $selected = "";
                    }
-                    $html.= '<option value="'.$row->id.'" '.$selected.' >'. $row->id ."-".$row->title.'</option>';
+                    $html.= '<option value="'. $key .'" '.$selected.' >'. $key ."-".$row->title.'</option>';
 
                 }
                 $html.='</select>';

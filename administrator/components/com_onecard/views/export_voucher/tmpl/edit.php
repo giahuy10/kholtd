@@ -109,7 +109,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 					<?php foreach ($exported_codes as $code) {?>
 						<tr>
 							<td><?php echo $code->title?></td>
-							<td><?php echo $code->value?></td>
+							<td><?php echo number_format($code->value)?></td>
 							<td><?php echo $code->code?></td>
 							<td><?php echo $code->barcode?></td>
 							<td><?php echo $code->serial?></td>
@@ -177,9 +177,7 @@ echo $this->form->renderField('list_templates'); ?>
 					<font color="red">(Max:&nbsp;<?php echo ini_get('upload_max_filesize'); ?>)</font>
 					
 						
-					<p>Hạn sử dụng</p>
-						
-					<input type="date" name="expired" value="<?php echo date('Y-m-d')?>" required />
+					
 					
 					<br/>
 					<br/>
@@ -266,10 +264,11 @@ echo $this->form->renderField('list_templates'); ?>
 				$check_client = $check_row[1];
 				$check_merchant_id = $check_row[3];
 				$export_type = $check_row[7];
+				$export_expired = date("Y-m-d", strtotime($row[8]));
 				$check_merchant_name = OnecardHelper::get_merchant_name($check_merchant_id);
 				$check_value = $check_row[4];
 				$check_quantity = $check_row[5];
-				$check_exported = OnecardHelper::export_codes($check_merchant_id, $check_value, $expired, $check_quantity);
+				$check_exported = OnecardHelper::export_codes($check_merchant_id, $check_value, $export_expired, $check_quantity);
 				$check_number_code = count($check_exported);
 				if ($check_number_code < $check_quantity) {
 					$unvailable[$check_nr] = new stdClass();
@@ -368,6 +367,7 @@ echo $this->form->renderField('list_templates'); ?>
 						$quantity = $row[5];
 						$price = $row[6];
 						$type = $row[7];
+						$expired_excel = date("Y-m-d",strtotime($row[8]));
 						//$event="";
 						//$expired = date('Y-m-d', strtotime("+35 days"));
 					?>
@@ -381,7 +381,7 @@ echo $this->form->renderField('list_templates'); ?>
 							<td>
 					<?php
 						
-						$exported = OnecardHelper::export_codes($merchant_id, $value, $expired, $quantity);
+						$exported = OnecardHelper::export_codes($merchant_id, $value, $expired_excel, $quantity);
 						if ($exported) {
 					
 						$user = JFactory::getUser();
@@ -390,15 +390,26 @@ echo $this->form->renderField('list_templates'); ?>
 						$exported_code_table->created_by = $user->id;
 						$exported_code_table->number = $quantity;
 						$exported_code_table->price = $price;
-						$exported_code_table->expired = $expired;
+						$exported_code_table->expired = $expired_excel;
 						
+						//
+					$now = date("Y-m-d"); // or your date as well
+					$startTimeStamp = strtotime($now);
+					$endTimeStamp = strtotime($expired_excel);
+
+					$timeDiff = abs($endTimeStamp - $startTimeStamp);
+
+					$numberDays = $timeDiff / 86400;  // 86400 seconds in one day
+
+					$expired_number = intval($numberDays);	
+
 						$exported_code_table->exported_id = $voucher_id;
 						
 						$insert_code_exported = JFactory::getDbo()->insertObject('#__onecard_export_voucher_detail', $exported_code_table);
 						$json_id = $count_insert-1;
 
 						
-						$data_json .= '"list_templates'.$json_id.'":{"voucher":"'.$exported_code_table->voucher.'","number":"'.$quantity.'","price":"'.$price.'","expired":"'.$expired.'"}';
+						$data_json .= '"list_templates'.$json_id.'":{"voucher":"'.$exported_code_table->voucher.'","number":"'.$quantity.'","price":"'.$price.'","expired":"'. $expired_number .'"}';
 						$real_record = count($rows) - 1;
 						if ($count_insert < $real_record){
 							$data_json .=',';
@@ -420,7 +431,25 @@ echo $this->form->renderField('list_templates'); ?>
 							echo $code_value;
 							$code->status=2;
 							$code->exported_id=$voucher_id;
+							$code->export_price = $price;
 							$update = JFactory::getDbo()->updateObject('#__onecard_code', $code, 'id');
+
+
+							// POST CODE TO ONECARD
+							$post_code = array(
+								'coupon' => $code->code,
+								'event_id' => OnecardHelper::get_event_oc_id($exported_code_table->voucher),
+								'status' => 1,
+								'created' => strtotime(date('Y-m-d 23:59:59')),
+								'merchant_id' => OnecardHelper::get_merchant_oc_id($merchant_id),
+								'end_time' => strtotime($expired),
+								'price' => $value,
+								'cart_detail_id' => 82,
+								'customer_id' => 1
+							);
+						$result_post = OnecardHelper::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+						Onecardhelper::log_sql("post_url" . $item, $data_json);
+
 						}?>
 							</td>
 							
@@ -437,7 +466,7 @@ echo $this->form->renderField('list_templates'); ?>
 							$array_row_tpb->value=$value;
 							$array_row_tpb->quantity=$quantity;
 							$array_row_tpb->code=$code_value;
-							$array_row_tpb->expired=$expired;
+							$array_row_tpb->expired=$expired_excel;
 							$array_row_tpb->partner=OnecardHelper::get_merchant_name($merchant_id);
 							$array_row_tpb->price=$price;
 							//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
@@ -456,16 +485,18 @@ echo $this->form->renderField('list_templates'); ?>
 				$count_insert++;	
 						
 		}
-		OnecardHelper::export_excel($export_tpb,"CODE_EXPORTED".time());
 		$object = new stdClass();
 
 		// Must be a valid primary key value.
 		$object->id = $voucher_id;
-		$object->excel_data = $export_tpb;
-		$object->list_templates = '{'.$data_json.'}';
+		$object->excel_data = json_encode($export_tpb);
+		$object->list_templates = '{' . $data_json . '}';
 		$object->is_exported_code = 1;
+		//$object->note = "Xuất code cho khách từ file excel";
 		// Update their details in the users table using id as the primary key.
 		$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+		OnecardHelper::export_excel($export_tpb,"CODE_EXPORTED".time());
+		
 		?>
 			</tbody>
 			</table>

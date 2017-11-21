@@ -15,6 +15,7 @@ $user       = JFactory::getUser();
 $type = JRequest::getVar('type');
 $voucher_id = JRequest::getVar('voucher_id');
 $expired = JRequest::getVar('expired');
+$input_price = JRequest::getVar('input_price');
 if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 	$number_code = JRequest::getVar('number_code');
 	$event_code = JRequest::getVar('event_code');
@@ -32,7 +33,7 @@ if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 						$product[$k]->state = 1 ;			
 						$product[$k]->code = $code;
 						$product[$k]->created = date("Y-m-d");
-						
+						$product[$k]->input_price = $input_price;
 						$product[$k]->expired = $expired;
 						$product[$k]->voucher = $voucher_id;
 						$product[$k]->status = 1;
@@ -71,7 +72,7 @@ if ($type == "upload_code") { // UPLOAD CODE TỪ FILE EXCEL
 			   
 			   if($imageFileType == "xlsx") {
 				   
-				   OnecardHelper::doImport($target_file, $voucher_id, $type_upload, $expired);
+				   OnecardHelper::doImport($target_file, $voucher_id, $type_upload, $expired, $input_price);
 				   
 			   }else {
 				   //doImportxls($target_file);

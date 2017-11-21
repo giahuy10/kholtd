@@ -42,7 +42,7 @@ class JFormFieldMerchantoc extends JFormFieldList {
                    }else {
                        $selected = "";
                    }
-                    $html.= '<option value="'.$row->id.'" '.$selected.' >'.$row->title.'</option>';
+                    $html.= '<option value="'.$row->id.'" '.$selected.' >' .$row->id .'-'.$row->title.'</option>';
 
                 }
                 $html.='</select>';

@@ -122,7 +122,7 @@ $results = $db->loadObjectList();
 		margin-bottom: 0 !important;
 	}
 </style>
-<h2>Báo cáo xuat kho</h2>
+<h2>Báo cáo xuất kho</h2>
 <form method="post" action="index.php?option=com_onecard&view=exportreport">
 <div class="row-fluid">
 	<div class="span2">

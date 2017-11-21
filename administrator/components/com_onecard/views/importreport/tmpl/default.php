@@ -54,7 +54,7 @@ $query = $db->getQuery(true);
 // Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 
 	$query
-    ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'c.input_price as price', 'c.type', 'c.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc' ))
+    ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'a.input_price as price', 'c.type', 'c.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc' ))
     ->from($db->quoteName('#__onecard_code', 'a'))
   
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
@@ -82,7 +82,7 @@ $query = $db->getQuery(true);
 		$query->where($db->quoteName('c.unit') . ' = '.$unit);
 	
 		$query->where($db->quoteName('a.state') . ' = 1');
-	$group = array('a.voucher');
+	$group = array('a.voucher','a.input_price');
 	
 	$query->group($group);
 	$query->order($db->quoteName('a.created') . ' DESC');
@@ -210,7 +210,7 @@ $(function() {
 		foreach ($results as $result) {
 			$total_import += $result->quantity;
 			$total_import_value += $result->quantity*$result->price;
-			$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1)*$result->price;
+			$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1, $result->price)*$result->price;
 			?>
 		<tr>
 			
@@ -222,8 +222,8 @@ $(function() {
 			<td><?php echo number_format($result->quantity*$result->price)?></td>
 			
 			
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,2);  else echo $result->partner?></td>
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1);  else echo $result->event?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,2,$result->price);  else echo $result->partner?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price);  else echo $result->event?></td>
 			<td><?php echo OnecardHelper::get_type_name($result->type)?></td>
 			
 			<td><?php if ($result->unit == 2) echo "OneCard"; else echo "NCC"?></td>

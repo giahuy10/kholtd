@@ -53,39 +53,88 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
         
         <div class="row-fluid">
             <div class="span10 form-horizontal">
-                <fieldset class="adminform">
-				
-				<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
-<input type="hidden" name="jform[state]" value="<?php echo $this->item->state; ?>" />
-<?php echo $this->form->renderField('ordering'); ?>
-<?php echo $this->form->renderField('checked_out'); ?>
-<?php echo $this->form->renderField('checked_out_time'); ?>
+                <fieldset class="adminform">				
+									<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
+									<input type="hidden" name="jform[state]" value="<?php echo $this->item->state; ?>" />
+									<?php echo $this->form->renderField('ordering'); ?>
+									<?php echo $this->form->renderField('checked_out'); ?>
+									<?php echo $this->form->renderField('checked_out_time'); ?>
 
-<?php echo $this->form->renderField('title'); ?>
-<?php echo $this->form->renderField('eventoc'); ?>
-<?php echo $this->form->renderField('type'); ?>
-<?php echo $this->form->renderField('unit'); ?>
-<?php echo $this->form->renderField('discount_type'); ?>
-<?php echo $this->form->renderField('quantity'); ?>
-<?php echo $this->form->renderField('brand'); ?>
-<?php echo $this->form->renderField('value'); ?>
-<?php echo $this->form->renderField('input_price'); ?>
-<?php echo $this->form->renderField('sale_price'); ?>
-<?php echo $this->form->renderField('started'); ?>
-<?php echo $this->form->renderField('expired'); ?>
-<?php echo $this->form->renderField('description'); ?>
-<?php echo $this->form->renderField('created_by'); ?>
-<?php echo $this->form->renderField('modified_by'); ?>
-
-
-
-
-                   
+									<?php echo $this->form->renderField('title'); ?>
+									<?php echo $this->form->renderField('eventoc'); ?>
+									<?php echo $this->form->renderField('eventoc_export'); ?>
+									<?php echo $this->form->renderField('max_quantity'); ?>
+									<?php if ($this->item->id) {?>
+										<span style="color:red;">Số code đã xuất cho OneCard <?php echo OnecardHelper::get_number_of_codes_exported_to_onecard($this->item->id);?></span>
+										<?php }?>
+									<?php echo $this->form->renderField('type'); ?>
+									<?php echo $this->form->renderField('unit'); ?>
+									<?php echo $this->form->renderField('discount_type'); ?>
+									<?php echo $this->form->renderField('quantity'); ?>
+									<?php echo $this->form->renderField('brand'); ?>
+									<?php echo $this->form->renderField('value'); ?>
+									<?php echo $this->form->renderField('input_price'); ?>
+									<?php echo $this->form->renderField('sale_price'); ?>
+									<?php echo $this->form->renderField('started'); ?>
+									<?php echo $this->form->renderField('expired'); ?>
+									<?php echo $this->form->renderField('description'); ?>
+									<?php echo $this->form->renderField('created_by'); ?>
+									<?php echo $this->form->renderField('modified_by'); ?>
                 </fieldset>
             </div>
         </div>
         
-        <?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php if ($this->item->id) {?>
+				<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'advanced', 'Thông tin codes'); ?>
+				
+							<?php
+								$code_need_renew = OnecardHelper::get_code_need_renew($this->item->id);
+							$db = JFactory::getDbo();
+			
+					// Create a new query object.
+							$query = $db->getQuery(true);
+			
+					// Select all records from the user profile table where key begins with "custom.".
+					// Order it by the ordering field.
+							$query->select('COUNT(*) as total, created, expired, status, input_price');
+							$query->from($db->quoteName('#__onecard_code'));
+							$query->where($db->quoteName('voucher') . ' = ' . $this->item->id);
+							$query->group(array('created', 'input_price','expired'));
+							$db->setQuery($query);
+					//Onecardhelper::log_sql("get_code_need_renew",$query->__toString());
+					// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+							$results = $db->loadObjectlist();
+							
+							?>
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th>Ngày nhập</th>
+										<th>Ngày hết hạn</th>
+										<th>Giá nhập</th>
+										<th>Số lượng</th>
+										<th>Đã xuất</th>
+										<th>Tồn kho</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ($results as $result) {?>
+										<tr>
+												<td><?php echo date("d-m-Y",strtotime($result->created))?></td>
+												<td><?php echo date("d-m-Y", strtotime($result->expired)) ?></td>
+												<td><?php echo number_format($result->input_price) ?></td>
+												<td><?php echo $result->total ?></td>
+												<td><?php $exported = OnecardHelper::get_number_of_voucher($this->item->id,2, $result->input_price, $result->created, $result->expired);
+													  echo $exported ?></td>
+												<td><?php echo $result->total - $exported ?></td>
+											</tr>
+									<?php }?>		
+									</tbody>
+							</table>
+				<?php echo JHtml::_('bootstrap.endTab'); ?>
+				<?php }?>
+
         <?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
         <input type="hidden" name="task" value=""/>
@@ -106,8 +155,8 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 					<div class="12">
 						<p>Chọn file </p>
 						<input type="file" name="fileToUpload" id="fileToUpload" size="40" class="inputbox" />
-						<font color="red">(Max:&nbsp;<?php echo ini_get('upload_max_filesize'); ?>)</font>		
-						
+						<font color="red">(Max:&nbsp;<?php echo ini_get('upload_max_filesize'); ?>)</font>		<br/>
+						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?> <span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span>
 					</div> 
 				</div>
 					
@@ -143,6 +192,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						<p>Mã sự kiện (XX)</p>
 						<input type="text" name="event_code" id="event_code" class="inputbox" />
 						<br/>
+						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?> <span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span><br/>
 						<button class="btn" id="create_code">Tạo code</button>	
 						
 					</div>
@@ -176,6 +226,8 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						<select name="code_need_renew" id="code_need_renew">
 							<?php if ($this->item->id) 
 								$code_need_renew = OnecardHelper::get_code_need_renew($this->item->id);
+								echo "hello";
+								var_dump($code_need_renew); 
 							foreach ($code_need_renew as $item_renew) {?>
 								<option value="<?php echo $item_renew->created?>"><?php echo $item_renew->created." | ".$item_renew->expired." | ".$item_renew->total?></option>
 							<?php }?>
@@ -213,7 +265,7 @@ jQuery( document ).ready(function( $ ) {
 	var event_code = $('#event_code').val();
 		$.ajax
 		({ 
-			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=create_code&voucher_id=<?php echo $this->item->id?>&expired=<?php echo date("Y-m-d",strtotime($this->item->expired))?>',
+			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=create_code&voucher_id=<?php echo $this->item->id?>&expired=<?php echo date("Y-m-d",strtotime($this->item->expired))?>&input_price=<?php echo $this->item->input_price;?>',
 			data: {"number_code": number_code, "event_code":event_code},
 			type: 'post',
 			success: function(result)
@@ -249,7 +301,7 @@ jQuery( document ).ready(function( $ ) {
 		form_data.append('file', file_data);		
 		$.ajax
 		({ 
-			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=upload_code&expired=<?php echo date("Y-m-d",strtotime($this->item->expired))?>&voucher_id=<?php echo $this->item->id?>&type_upload='+type_upload,
+			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=upload_code&expired=<?php echo date("Y-m-d",strtotime($this->item->expired))?>&voucher_id=<?php echo $this->item->id?>&input_price=<?php echo $this->item->input_price; ?>&type_upload='+type_upload,
 			cache: false,
             contentType: false,
             processData: false,
