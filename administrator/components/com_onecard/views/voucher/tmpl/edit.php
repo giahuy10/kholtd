@@ -61,12 +61,15 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 									<?php echo $this->form->renderField('checked_out_time'); ?>
 
 									<?php echo $this->form->renderField('title'); ?>
+									<?php if ($this->item->id) { ?>
 									<?php echo $this->form->renderField('eventoc'); ?>
 									<?php echo $this->form->renderField('eventoc_export'); ?>
 									<?php echo $this->form->renderField('max_quantity'); ?>
-									<?php if ($this->item->id) {?>
+									
 										<span style="color:red;">Số code đã xuất cho OneCard <?php echo OnecardHelper::get_number_of_codes_exported_to_onecard($this->item->id);?></span>
-										<?php }?>
+										<?php } else {?>
+											<span style="color:red;">Vui lòng Save/Lưu voucher trước khi gán sự kiện OneCard</span>
+											<?php }?>
 									<?php echo $this->form->renderField('type'); ?>
 									<?php echo $this->form->renderField('unit'); ?>
 									<?php echo $this->form->renderField('discount_type'); ?>
@@ -156,7 +159,9 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						<p>Chọn file </p>
 						<input type="file" name="fileToUpload" id="fileToUpload" size="40" class="inputbox" />
 						<font color="red">(Max:&nbsp;<?php echo ini_get('upload_max_filesize'); ?>)</font>		<br/>
-						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?> <span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span>
+						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?> <br/>
+						Hạn sử dụng cho lần này: <?php echo date("d-m-Y",strtotime($this->item->expired)); ?> <br/>
+						<span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span>
 					</div> 
 				</div>
 					

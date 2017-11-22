@@ -85,7 +85,7 @@ $query = $db->getQuery(true);
 	$group = array('a.voucher','a.input_price');
 	
 	$query->group($group);
-	$query->order($db->quoteName('a.created') . ' DESC');
+	$query->order($db->quoteName('c.expired') . ' ASC');
 //	echo $query->__toString();	
 // Reset the query using our newly populated query object.
 $db->setQuery($query);
@@ -119,7 +119,7 @@ $results = $db->loadObjectList();
 
 </script>
 <h2>Báo cáo kho</h2>
-<form method="post" action="index.php?option=com_onecard&view=exportreport">
+<form method="post" action="index.php?option=com_onecard&view=importreport">
 <div class="row-fluid">
 	<div class="span2">
 		<label>Merchant</label>

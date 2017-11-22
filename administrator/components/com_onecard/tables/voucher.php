@@ -156,7 +156,8 @@ class OnecardTableVoucher extends JTable
 		if (!$this->isUnique('alias'))
 		{
 			throw new Exception('Your <b>alias</b> item "<b>' . $this->alias . '</b>" already exists');
-		}
+        }
+        
         $this->eventoc = implode(',', $this->eventoc);
 
         return parent::check();

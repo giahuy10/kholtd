@@ -124,15 +124,11 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						
 						OnecardHelper::export_excel($excel_data,$this->item->id."_".$this->item->event);
 					}
-				if ($task == "export_customer") {
-
-					OnecardHelper::export_excel(json_decode($this->item->excel_data), $this->item->id . "_" . $this->item->event);
-				}
 						
 				?>
 
 				<a href="<?php echo JURI::root()?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id?>&task=export"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download Codes</a>
-				<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=export_customer"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download Codes kèm khách hàng</a>
+				
 					
 			<?php }?>
                 <fieldset class="adminform">
