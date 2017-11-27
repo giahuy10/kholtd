@@ -10,7 +10,7 @@ class JFormFieldMerchantoc extends JFormFieldList {
 	protected $type = 'Merchantoc';
 
     public function getInput() {
-        $json = file_get_contents('https://onecard.ycar.vn/api.php?act=merchant&code=get-list');      
+        $json = file_get_contents('https://onecard.vn/api.php?act=merchant&code=get-list');      
         $data = json_decode($json);
        // $app = JFactory::getApplication();
         $id = JRequest::getVar('id'); //country is the dynamic value which is being used in the viewv

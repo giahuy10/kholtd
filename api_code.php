@@ -312,8 +312,9 @@ function export_codes_by_eventoc ($data){
 		//$item->codes = $codes[$key];
 		$voucher_type = get_voucher_type($export_detail[$key]->voucher);
 		$sms_code = "";
+		$post_code = array();
 		foreach ($codes[$item->event->id] as $code) {
-			$post_code = array(
+			$post_code[] = array(
 				'coupon'=>$code->code,
 				'event_id'=> $item->event->id,
 				'status'=>1,
@@ -324,7 +325,7 @@ function export_codes_by_eventoc ($data){
 				'cart_detail_id'=>$key,
 				'customer_id'=>$order->customer_id
 			);
-			postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+			//postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
 			$sms_code.= $code->code." ";
 			$code->status = 2;
 			$code->exported_id = $export->id;
@@ -344,7 +345,7 @@ function export_codes_by_eventoc ($data){
 	$update_export = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $export, 'id');
 		$response->status = 1;
 		$response->message = "Success 6";
-		$response->data = array("code"=>$codes,"export"=>$export, "sms"=> $sms_return);
+		$response->data = array("code"=> $post_code,"export"=>$export, "sms"=> $sms_return);
 	
 	
 	return $response;
