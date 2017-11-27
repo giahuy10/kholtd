@@ -373,7 +373,7 @@ function get_voucher_detail ($voucher_id) {
 	
 	return ($results);
 }
-function get_number_of_codes($voucher_id, $max_sell) {
+function get_number_of_codes($voucher_id, $max_sell, $current_quan) {
 	// Get a db connection.
 	$db = JFactory::getDbo();
 
@@ -398,12 +398,12 @@ function get_number_of_codes($voucher_id, $max_sell) {
 		$exported_oc = get_number_of_codes_exported_to_onecard($voucher_id);
 		$available_code_oc = $max_code - $exported_oc;
 		if ($available_code_oc > $available_code){
-			return $available_code;
+			return $available_code - $current_quan;
 		}else {
-			return $available_code_oc;
+			return $available_code_oc - $current_quan;
 		}
 	}else {
-		return $available_code;
+		return $available_code - $current_quan;
 	}
 }
 function get_number_of_codes_exported_to_onecard($voucher_id) {
@@ -494,12 +494,18 @@ switch ($task) {
 	case "number":
 		$event_id = $data->event_id;
 		$max_sell = $data->max_sell;
+		$cart = $data->cart;
+		$current_quan = 0;
+		if ($cart->$event_id) {
+			$current_quan = $cart->$event_id->quan;
+		}
+		
 		$voucher_id = get_voucher_id($event_id);
 		
 		if ($voucher_id) {
 			$response['status'] = 1;
 			$response['message'] = "Success";
-			$response['data'] = get_number_of_codes($voucher_id, $max_sell);
+			$response['data'] = get_number_of_codes($voucher_id, $max_sell, $current_quan);
 		}else {
 			$response['status'] = -1;
 			$response['message'] = "Error: Không tìm thấy sự kiện";
