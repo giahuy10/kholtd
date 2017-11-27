@@ -64,9 +64,9 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 									<?php if ($this->item->id) { ?>
 									<?php echo $this->form->renderField('eventoc'); ?>
 									<?php echo $this->form->renderField('eventoc_export'); ?>
-									<?php echo $this->form->renderField('max_quantity'); ?>
 									
-										<span style="color:red;">Số code đã xuất cho OneCard <?php echo OnecardHelper::get_number_of_codes_exported_to_onecard($this->item->id);?></span>
+									
+										
 										<?php } else {?>
 											<span style="color:red;">Vui lòng Save/Lưu voucher trước khi gán sự kiện OneCard</span>
 											<?php }?>

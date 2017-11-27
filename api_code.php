@@ -120,9 +120,10 @@ function get_voucher_id ($eventoc) {
 	// Select all records from the user profile table where key begins with "custom.".
 	// Order it by the ordering field.
 	$query->select($db->quoteName('voucher'));
-	$query->from($db->quoteName('#__onecard_voucher_event'));
-
+	$query->from($db->quoteName('#__onecard_voucher_event','a'));
+	$query->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')');
 	$query->where($db->quoteName('event') . ' = '. $eventoc);
+	$query->where($db->quoteName('b.state') . ' = 1');
 	// Reset the query using our newly populated query object.
 	$query->order($db->quoteName('voucher') . ' DESC');
 	$db->setQuery($query,0,1);
@@ -370,7 +371,7 @@ function get_voucher_detail ($voucher_id) {
 	
 	return ($results);
 }
-function get_number_of_codes($voucher_id) {
+function get_number_of_codes($voucher_id, $max_sell) {
 	// Get a db connection.
 	$db = JFactory::getDbo();
 
@@ -390,7 +391,7 @@ function get_number_of_codes($voucher_id) {
 	$db->execute();
 	$available_code = $db->getNumRows();
 	$detail = get_voucher_detail($voucher_id);
-	$max_code = $detail->max_quantity;
+	$max_code = $max_sell;
 	if ($max_code > 0) {
 		$exported_oc = get_number_of_codes_exported_to_onecard($voucher_id);
 		$available_code_oc = $max_code - $exported_oc;
@@ -490,12 +491,13 @@ switch ($task) {
 		break;
 	case "number":
 		$event_id = $data->event_id;
+		$max_sell = $data->max_sell;
 		$voucher_id = get_voucher_id($event_id);
 		
 		if ($voucher_id) {
 			$response['status'] = 1;
 			$response['message'] = "Success";
-			$response['data'] = get_number_of_codes($voucher_id);
+			$response['data'] = get_number_of_codes($voucher_id, $max_sell);
 		}else {
 			$response['status'] = -1;
 			$response['message'] = "Error: Không tìm thấy sự kiện";

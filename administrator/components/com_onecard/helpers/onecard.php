@@ -771,9 +771,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 							$update_detail = JFactory::getDbo()->updateObject('#__onecard_export_voucher_detail', $detail, 'id');
 					}
 
-				}
-				
-				
+				}	
 	}
 	
 	public static function log_sql ($function_name, $query) {

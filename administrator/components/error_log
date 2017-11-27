@@ -1,0 +1,32 @@
+[15-Nov-2017 15:05:23 Asia/Ho_Chi_Minh] PHP Fatal error:  Call to undefined function php_info() in /home/ltdf97ac/public_html/onecard/info.php on line 2
+[16-Nov-2017 10:55:38 Asia/Ho_Chi_Minh] PHP Notice:  Undefined variable: data_string in /home/ltdf97ac/public_html/onecard/info.php on line 6
+[16-Nov-2017 10:55:38 Asia/Ho_Chi_Minh] PHP Notice:  Undefined variable: data_string in /home/ltdf97ac/public_html/onecard/info.php on line 10
+[16-Nov-2017 14:14:57 Asia/Ho_Chi_Minh] PHP Parse error:  syntax error, unexpected end of file in /home/ltdf97ac/public_html/onecard/api.php on line 39
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vpoint in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 35
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$token in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 36
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vpoint in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 120
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined variable: voucher in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 229
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined variable: voucher in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 243
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$email in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 176
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$mobile in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 177
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$note in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 181
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vourcherPrice in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 184
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vourcherType in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 185
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 186
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 187
+[22-Nov-2017 16:10:42 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 188
+[22-Nov-2017 16:10:43 Asia/Bangkok] PHP Notice:  Undefined variable: sql_completed in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 99
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vpoint in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 35
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$token in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 36
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vpoint in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 120
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined variable: voucher in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 229
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined variable: voucher in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 243
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$email in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 176
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$mobile in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 177
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$note in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 181
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vourcherPrice in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 184
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Undefined property: stdClass::$vourcherType in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 185
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 186
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 187
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Notice:  Trying to get property of non-object in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 188
+[22-Nov-2017 16:11:08 Asia/Bangkok] PHP Fatal error:  Call to undefined method api_cart::log() in /home/ltdf97ac/public_html/onecard/includes/api_action/api_cart.php on line 84
