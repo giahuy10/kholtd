@@ -495,8 +495,9 @@ switch ($task) {
 		$event_id = $data->event_id;
 		$max_sell = $data->max_sell;
 		$cart = $data->cart;
+		$type = $data->type;
 		$current_quan = 0;
-		if ($cart->$event_id) {
+		if ($cart->$event_id && !$type) {
 			$current_quan = $cart->$event_id->quan;
 		}
 		
