@@ -270,6 +270,7 @@ function export_codes_by_eventoc ($data){
 		
 	$i = 0;
 	$sms_return = array();
+	$post_code = array();
 	foreach ($items as $key => $item) {
 		
 		// Create and populate an object.
@@ -312,7 +313,7 @@ function export_codes_by_eventoc ($data){
 		//$item->codes = $codes[$key];
 		$voucher_type = get_voucher_type($export_detail[$key]->voucher);
 		$sms_code = "";
-		$post_code = array();
+		
 		foreach ($codes[$item->event->id] as $code) {
 			$post_code[] = array(
 				'coupon'=>$code->code,
@@ -345,7 +346,7 @@ function export_codes_by_eventoc ($data){
 	$update_export = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $export, 'id');
 		$response->status = 1;
 		$response->message = "Success 6";
-		$response->data = array("code"=> $post_code,"export"=>$export, "sms"=> $sms_return);
+		$response->data = array("code"=> $post_code);
 	
 	
 	return $response;
