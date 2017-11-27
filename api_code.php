@@ -26,6 +26,30 @@ function get_expired ($voucher, $exported_id) {
 	$results = $db->loadResult();
 	return $results;
 }
+function active_code ($code) {
+	$db = JFactory::getDbo();
+
+	$query = $db->getQuery(true);
+
+// Fields to update.
+	$fields = array(
+		$db->quoteName('status') . ' = 3' ,
+		$db->quoteName('used_date') . ' = '. $db->quote(date("Y-m-d H:i:s"))
+	);
+
+// Conditions for which records should be updated.
+	$conditions = array(
+		$db->quoteName('code') . ' = ' . $db->quote($code)
+	);
+
+	$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
+
+	$db->setQuery($query);
+
+	$result = $db->execute();
+	return $result;
+	
+}
 function check_code_oo($codes, $type, $merchantoc, $used_location = NULL) {
 	return $codes;
 }
@@ -482,12 +506,8 @@ switch ($task) {
 		break;
 	case "active":
 		
-		$merchant_id = $data->merchant;
-		$codes = $data->codes;
-		$codes = str_replace(" ","",$codes);
-		$codes = explode(",",$codes);
-		$used_location = $data->active_location;
-		$response = check_code($codes,"active",$merchant_id,$used_location);
+		$code = $data->code;
+		$response = active_code($code);
 		log_api("code", "active", $data, $response);
 		
 		break;
