@@ -354,6 +354,7 @@ function export_codes_by_eventoc ($data){
 			$sms_code.= $code->code." ";
 			$code->status = 2;
 			$code->exported_id = $export->id;
+			$code->export_price = $item->event->price;
 			$update_code_status = JFactory::getDbo()->updateObject('#__onecard_code', $code, 'id');
 		}
 		if ($voucher_type == 1) {
