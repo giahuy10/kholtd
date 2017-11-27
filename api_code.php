@@ -187,8 +187,11 @@ function get_max_id ($table){
 	return ($result);
 }
 function get_codes ($voucher, $expired, $number){
+	
 	$db = JFactory::getDbo();
 
+	try {
+		$db->transactionStart();
 		// Create a new query object.
 	$query = $db->getQuery(true);
 
@@ -212,7 +215,13 @@ function get_codes ($voucher, $expired, $number){
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 	$exported = $db->loadObjectlist();
-	return $exported;
+		return $exported;
+		$db->transactionCommit();
+	} catch (Exception $e) {
+    // catch any database errors.
+		$db->transactionRollback();
+		JErrorPage::render($e);
+	}
 }
 function sendSMS ($Content, $YourPhone) {
 	$APIKey = "2A00924E0B265978F73EB9B28088DF";
@@ -315,7 +324,7 @@ function export_codes_by_eventoc ($data){
 			$now = date("Y-m-d"); // or your date as well
 			$startTimeStamp = strtotime($now);
 			$endTimeStamp = strtotime($export_detail[$key]->expired);
-
+			
 			$timeDiff = abs($endTimeStamp - $startTimeStamp);
 
 			$numberDays = $timeDiff / 86400;  // 86400 seconds in one day
