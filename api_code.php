@@ -482,6 +482,19 @@ function objToArray($obj, &$arr)
 	}
 	return $arr;
 }
+function get_quantity ($data) {
+	$response = array();
+	foreach ($data as $x=>&$item) {
+		$voucher_id = get_voucher_id($item->id);
+		if ($voucher_id) {
+			$item->quantity = get_number_of_codes($voucher_id, $item->max_sell,0);
+			$response[$x]->voucher = $voucher_id;
+		}
+		$response[$x] = $item;
+		$response[$x]->test = 0;
+	}
+	return $response;
+}
 //$response = array();
 switch ($task) {
 
@@ -540,7 +553,9 @@ switch ($task) {
 	case "test":
 		log_api("code", "test", $data, $response);
 		break;	
-	
+	case "get_quantity":
+		$response = get_quantity($data);
+		break;
 	case "get": 		
 			$response = export_codes_by_eventoc($data);
 			log_api("code", "get", $data, $response);
