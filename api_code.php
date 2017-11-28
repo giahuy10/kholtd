@@ -493,8 +493,8 @@ function get_quantity ($data) {
 		$response[$x] = $item;
 		$response[$x]->test = 0;
 	}
-	$array = objToArray($response, $arr);
-	return $array;
+	
+	return $response;
 }
 //$response = array();
 switch ($task) {
