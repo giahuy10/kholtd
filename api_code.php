@@ -551,7 +551,7 @@ switch ($task) {
 		log_api("code", "number", $data, $response);
 		break;
 	case "test":
-	
+		$response = get_quantity($data);
 		log_api("code", "test", $data, $response);
 		break;	
 	case "getquantity":
