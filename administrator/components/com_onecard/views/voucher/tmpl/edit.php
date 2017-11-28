@@ -197,7 +197,10 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						<p>Mã sự kiện (XX)</p>
 						<input type="text" name="event_code" id="event_code" class="inputbox" />
 						<br/>
-						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?> <span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span><br/>
+						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?><br/>
+						Hạn sử dụng cho lần này: <?php echo date("d-m-Y", strtotime($this->item->expired)); ?> <br/>
+						
+						<span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span><br/>
 						<button class="btn" id="create_code">Tạo code</button>	
 						
 					</div>
