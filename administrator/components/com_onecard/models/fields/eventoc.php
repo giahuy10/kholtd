@@ -16,7 +16,7 @@ class JFormFieldEventoc extends JFormFieldList {
                 "verify_peer_name" => false,
             ),
         );
-        $json = file_get_contents('https://onecard.ycar.vn/api.php?act=item&code=all', false, stream_context_create($arrContextOptions));      
+        $json = file_get_contents('https://onecard.vn/api.php?act=item&code=all', false, stream_context_create($arrContextOptions));      
         $data = json_decode($json);
        // $app = JFactory::getApplication();
         $id = JRequest::getVar('id'); //country is the dynamic value which is being used in the viewv
