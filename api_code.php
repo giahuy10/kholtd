@@ -190,8 +190,7 @@ function get_codes ($voucher, $expired, $number){
 	
 	$db = JFactory::getDbo();
 
-	try {
-		$db->transactionStart();
+	
 		// Create a new query object.
 	$query = $db->getQuery(true);
 
@@ -215,13 +214,7 @@ function get_codes ($voucher, $expired, $number){
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 	$exported = $db->loadObjectlist();
-		return $exported;
-		$db->transactionCommit();
-	} catch (Exception $e) {
-    // catch any database errors.
-		$db->transactionRollback();
-		JErrorPage::render($e);
-	}
+	return $exported;
 }
 function sendSMS ($Content, $YourPhone) {
 	$APIKey = "2A00924E0B265978F73EB9B28088DF";
@@ -371,7 +364,7 @@ function export_codes_by_eventoc ($data){
 		} else {
 			$content = "Voucher ". stripUnicode($item->event->title) . " - " . number_format($item->price) . " vnd - HSD: " . date('d/m/Y', strtotime($export_detail[$key]->expired)) . " se duoc chuyen den dia chi cua quy khach - Hotline:19001748";
 		}
-		$sms_return[$key] = sendSMS($content, $order->phone);
+		//$sms_return[$key] = sendSMS($content, $order->phone);
 	}
 	$json_text = implode(",", $json_array);
 	$json_data .= $json_text;
