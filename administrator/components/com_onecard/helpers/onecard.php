@@ -721,7 +721,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 				$query->where($db->quoteName('exported_code') . ' = 0');
 				$db->setQuery($query);
 				$details = $db->loadObjectList();
-			
+				$post_code = array();
 				foreach ($details as $detail) {
 					$exported_code = OnecardHelper::export_codes_by_voucher($detail->voucher, $detail->expired, $detail->number);
 					if ($detail->number > count($exported_code)) {
@@ -741,7 +741,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 									'cart_detail_id' => 82,
 									'customer_id' => 1
 								);
-								$result_post = self::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+								//$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
 							//	Onecardhelper::log_sql("post_url". $item, json_encode($post_code));
 							}
 							if (!$detail->price) {
@@ -771,7 +771,9 @@ class OnecardHelper extends OnecardHelpersOnecard
 							$update_detail = JFactory::getDbo()->updateObject('#__onecard_export_voucher_detail', $detail, 'id');
 					}
 
-				}	
+				}
+		$result_post = self::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+		Onecardhelper::log_sql("post_url", $result_post);
 	}
 	
 	public static function log_sql ($function_name, $query) {

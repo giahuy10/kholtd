@@ -484,14 +484,14 @@ function objToArray($obj, &$arr)
 }
 function get_quantity ($data) {
 	$response = array();
-	foreach ($data as $x=>&$item) {
+	foreach ($data as $x=>$item) {
 		$voucher_id = get_voucher_id($item->id);
 		if ($voucher_id) {
 			$item->quantity = get_number_of_codes($voucher_id, $item->max_sell,0);
-			$response[$x]->voucher = $voucher_id;
+			$item->voucher = $voucher_id;
 		}
 		$response[$x] = $item;
-		$response[$x]->test = 0;
+		$response[$x]->test = 2;
 	}
 	
 	return $response;
@@ -557,6 +557,7 @@ switch ($task) {
 		break;	
 	case "getquantity":
 		$response = get_quantity($data);
+		log_api("code", "getquantity", $data, $response);
 		break;
 	case "get": 		
 			$response = export_codes_by_eventoc($data);
