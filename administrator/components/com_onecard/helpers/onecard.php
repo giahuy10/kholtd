@@ -772,7 +772,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 					}
 
 				}
-		$result_post = self::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+		$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
 		Onecardhelper::log_sql("post_url", $result_post);
 	}
 	

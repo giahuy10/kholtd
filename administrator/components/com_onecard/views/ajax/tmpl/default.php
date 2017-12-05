@@ -19,6 +19,7 @@ $input_price = JRequest::getVar('input_price');
 if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 	$number_code = JRequest::getVar('number_code');
 	$event_code = JRequest::getVar('event_code');
+	$virtual_code = JRequest::getVar('virtual_code');
 	
 	
 	$k = 0;
@@ -38,6 +39,7 @@ if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 						$product[$k]->voucher = $voucher_id;
 						$product[$k]->status = 1;
 						$product[$k]->type = 2;
+						$product[$k]->virtual_code = $virtual_code;
 						$product[$k]->created_by = $user->id;
 					//	echo "<pre>";
 						//	var_dump ($product[$k]);

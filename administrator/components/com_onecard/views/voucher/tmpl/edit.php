@@ -196,7 +196,9 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						
 						<p>Mã sự kiện (XX)</p>
 						<input type="text" name="event_code" id="event_code" class="inputbox" />
+						<p>Code ảo <input type="checkbox" name="virtual_code" id="virtual_code" value="1" /></p>
 						<br/>
+						
 						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?><br/>
 						Hạn sử dụng cho lần này: <?php echo date("d-m-Y", strtotime($this->item->expired)); ?> <br/>
 						
@@ -265,16 +267,21 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 
 <script>
 jQuery( document ).ready(function( $ ) {
-	// CREATE CODE
+	
 	$('#create_code').click(function(){
-
+	var virtual_code = 0;  
+	if ($('#virtual_code').is(":checked"))
+		{
+		virtual_code = 1;
+		}	
+			
 	   
 	var number_code = $('#number').val();
 	var event_code = $('#event_code').val();
 		$.ajax
 		({ 
 			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=create_code&voucher_id=<?php echo $this->item->id?>&expired=<?php echo date("Y-m-d",strtotime($this->item->expired))?>&input_price=<?php echo $this->item->input_price;?>',
-			data: {"number_code": number_code, "event_code":event_code},
+			data: {"number_code": number_code, "event_code":event_code, "virtual_code":virtual_code},
 			type: 'post',
 			success: function(result)
 			{
