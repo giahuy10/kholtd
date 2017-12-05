@@ -730,7 +730,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 							// Change status
 							foreach ($exported_code as $item) {
 								$voucher_detail = self::get_voucher_detail($detail->voucher);
-								$post_code = array(
+								$post_code[] = array(
 									'coupon' => $item,
 									'event_id' => self::get_event_oc_id($detail->voucher),
 									'status' => 1,
