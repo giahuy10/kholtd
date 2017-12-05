@@ -732,6 +732,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 								$voucher_detail = self::get_voucher_detail($detail->voucher);
 								$post_code[] = array(
 									'coupon' => $item,
+									'pincode' => $code->serial,
 									'event_id' => self::get_event_oc_id($detail->voucher),
 									'status' => 1,
 									'created' => strtotime(date('Y-m-d 23:59:59')),
