@@ -313,6 +313,9 @@ function export_codes_by_eventoc($data)
 		$export_detail[$key] = new stdClass();
 		$export_detail[$key]->voucher = get_voucher_id($item->event->id);
 		$export_detail[$key]->number = $item->quantity;
+		if ($item->event->double_code == 1) {
+			$export_detail[$key]->number = $export_detail[$key]->number*2;
+		}
 		$export_detail[$key]->price = $item->price;
 		if ($item->event->exprie_type > 0) {
 			$date = date("Y-m-d");// current date
@@ -549,6 +552,7 @@ switch ($task) {
 	case "number":
 		$event_id = $data->event_id;
 		$max_sell = $data->max_sell;
+		$double_code = $data->double_code;
 		$cart = $data->cart;
 		$type = $data->type;
 		$current_quan = 0;
