@@ -233,7 +233,7 @@ $(function() {
 			<td><?php echo OnecardHelper::get_type_name($result->type)?></td>
 			<td><?php if ($result->unit == 2) echo "OneCard"; else echo "NCC"?></td>
 			
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,2);  else echo $result->partner?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3");  else echo $result->partner?></td>
 			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1);  else echo $result->event?></td>
 			<td><?php if ($report_type == 1) echo date("d-m-Y",strtotime($result->expired)); else echo date("d-m-Y",strtotime($result->exported_date)); ?></td>
 			

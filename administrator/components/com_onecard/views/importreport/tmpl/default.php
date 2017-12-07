@@ -222,7 +222,7 @@ $(function() {
 			<td><?php echo number_format($result->quantity*$result->price)?></td>
 			
 			
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,2,$result->price);  else echo $result->partner?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3",$result->price);  else echo $result->partner?></td>
 			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price);  else echo $result->event?></td>
 			<td><?php echo OnecardHelper::get_type_name($result->type)?></td>
 			
