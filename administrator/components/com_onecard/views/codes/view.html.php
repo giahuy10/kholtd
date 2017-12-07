@@ -7,7 +7,7 @@
   * @license    GNU General Public License version 2 or later; see LICENSE.txt
   */
 // No direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die; 
 
 jimport('joomla.application.component.view');
 
@@ -66,7 +66,7 @@ class OnecardViewCodes extends JViewLegacy
         $canDo = OnecardHelpersOnecard::getActions();
 
         JToolBarHelper::title(JText::_('COM_ONECARD_TITLE_CODES'), 'codes.png');
-
+        $bar = JToolbar::getInstance('toolbar');
         // Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/code';
 
@@ -109,6 +109,13 @@ class OnecardViewCodes extends JViewLegacy
                 JToolBarHelper::custom('codes.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
             }
         }
+        $title = JText::_('JTOOLBAR_BATCH');
+
+			// Instantiate a new JLayoutFile instance and render the batch button
+        $layout = new JLayoutFile('joomla.toolbar.batch');
+
+        $dhtml = $layout->render(array('title' => $title));
+        $bar->appendButton('Custom', $dhtml, 'batch');
 
         // Show trash and delete for components that uses the state field
         if (isset($this->items[0]->state))

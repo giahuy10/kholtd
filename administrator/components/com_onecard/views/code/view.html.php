@@ -107,5 +107,6 @@ class OnecardViewCode extends JViewLegacy
         {
             JToolBarHelper::cancel('code.cancel', 'JTOOLBAR_CLOSE');
         }
+        
     }
 }

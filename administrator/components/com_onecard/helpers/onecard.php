@@ -380,7 +380,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 		$query->select('id');
 		$query->from($db->quoteName('#__onecard_code'));
 		if ($status) 
-			$query->where($db->quoteName('status') . ' = '. $status);
+			$query->where($db->quoteName('status') . ' in ('. $status.')');
 		$query->where($db->quoteName('voucher') . ' = '. $voucher_id);
 		$query->where($db->quoteName('state') . ' = 1');
 		$query->where($db->quoteName('input_price') . ' = '. $price);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?> 
 <form>
   <fieldset>
     <field name="id" type="text" label="COM_ONECARD_FORM_LBL_code_ID" description="COM_ONECARD_FORM_DESC_code_ID" required="true" class="readonly" default="0" readonly="true"/>

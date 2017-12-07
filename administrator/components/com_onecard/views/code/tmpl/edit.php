@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
   * @version    1.0.0
   * @package    com_onecard

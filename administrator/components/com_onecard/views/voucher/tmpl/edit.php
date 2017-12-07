@@ -118,6 +118,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 										<th>Giá nhập</th>
 										<th>Số lượng</th>
 										<th>Đã xuất</th>
+										<th>Đã Su dung</th>
 										<th>Tồn kho</th>
 									</tr>
 								</thead>
@@ -128,8 +129,10 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 												<td><?php echo date("d-m-Y", strtotime($result->expired)) ?></td>
 												<td><?php echo number_format($result->input_price) ?></td>
 												<td><?php echo $result->total ?></td>
-												<td><?php $exported = OnecardHelper::get_number_of_voucher($this->item->id,2, $result->input_price, $result->created, $result->expired);
+												<td><?php $exported = OnecardHelper::get_number_of_voucher($this->item->id,"2,3", $result->input_price, $result->created, $result->expired);
 													  echo $exported ?></td>
+													  <td><?php $used = OnecardHelper::get_number_of_voucher($this->item->id, "3", $result->input_price, $result->created, $result->expired);
+																		echo $used   ?></td>
 												<td><?php echo $result->total - $exported ?></td>
 											</tr>
 									<?php }?>		
