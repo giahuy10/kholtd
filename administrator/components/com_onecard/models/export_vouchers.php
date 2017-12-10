@@ -227,7 +227,8 @@ class OnecardModelExport_vouchers extends JModelList
  a.`expired` like $search  || 
  a.`voucher` like $search  || 
  a.`price` like $search  || 
- a.`created` like $search 
+ a.`created` like $search ||
+  a.`note` like $search 
 ");
 			}
 		}
