@@ -355,6 +355,7 @@ echo $this->form->renderField('list_templates'); ?>
 		//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
 		$export_tpb[0]=$array_title_tpb;
 		$data_json = "";
+		$post_code = array();	
 		foreach ($rows as $row) {
 				if ($count_insert>0 && $row[0]!="") {
 						$exported_code = new stdClass();
@@ -419,6 +420,7 @@ echo $this->form->renderField('list_templates'); ?>
 							$code_value = "";
 						else 	
 							$code_value = "'";
+						
 						foreach ($exported as $code) {
 							if ($type == 1)
 								$code_value .= 'Voucher('.$code->code.')/PIN('.$code->serial.')';
@@ -436,7 +438,7 @@ echo $this->form->renderField('list_templates'); ?>
 
 
 							// POST CODE TO ONECARD
-							$post_code = array(
+							$post_code[] = array(
 								'coupon' => $code->code,
 								'event_id' => OnecardHelper::get_event_oc_id($exported_code_table->voucher),
 								'status' => 1,
@@ -447,8 +449,8 @@ echo $this->form->renderField('list_templates'); ?>
 								'cart_detail_id' => 82,
 								'customer_id' => 1
 							);
-						$result_post = OnecardHelper::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
-						Onecardhelper::log_sql("post_url" . $item, $data_json);
+						//$result_post = OnecardHelper::postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+						//Onecardhelper::log_sql("post_url" . $item, $data_json);
 
 						}?>
 							</td>
@@ -485,6 +487,8 @@ echo $this->form->renderField('list_templates'); ?>
 				$count_insert++;	
 						
 		}
+		$result_post = OnecardHelper::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+		Onecardhelper::log_sql("post_url", $result_post);
 		$object = new stdClass();
 
 		// Must be a valid primary key value.
