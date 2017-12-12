@@ -344,6 +344,7 @@ function export_codes_by_eventoc($data)
 		$export_detail[$key]->exported_id = $export->id;
 		$export_detail[$key]->exported_code = 1;
 		$export_detail[$key]->is_onecard = 1;
+		$export_detail[$key]->event_id = $item->event->id;
 		$json_array[$i] = '"list_templates' . $i . '" : {"voucher" :"' . $export_detail[$key]->voucher . '" , "price" :"' . $export_detail[$key]->price . '" , "number" :"' . $export_detail[$key]->number . '" , "expired" : "' . $expired_number . '"}';
 		$i++;
 
@@ -417,7 +418,7 @@ function get_voucher_detail($voucher_id)
 
 	return ($results);
 }
-function get_number_of_codes($voucher_id, $max_sell, $current_quan)
+function get_number_of_codes($voucher_id, $event_id, $max_sell, $current_quan)
 {
 	// Get a db connection.
 	$db = JFactory::getDbo();
@@ -440,18 +441,22 @@ function get_number_of_codes($voucher_id, $max_sell, $current_quan)
 	$detail = get_voucher_detail($voucher_id);
 	$max_code = $max_sell;
 	if ($max_code > 0) {
-		$exported_oc = get_number_of_codes_exported_to_onecard($voucher_id);
+		$exported_oc = get_number_of_codes_exported_to_onecard($event_id);
 		$available_code_oc = $max_code - $exported_oc;
 		if ($available_code_oc > $available_code) {
-			return $available_code - $current_quan;
+			$return_number = $available_code - $current_quan;
 		} else {
-			return $available_code_oc - $current_quan;
+			$return_number = $available_code_oc - $current_quan;
 		}
 	} else {
-		return $available_code - $current_quan;
+		$return_number = $available_code - $current_quan;
 	}
+	if ($return_number <0) {
+		$return_number = 0;
+	}
+	return $return_number;
 }
-function get_number_of_codes_exported_to_onecard($voucher_id)
+function get_number_of_codes_exported_to_onecard($event_id)
 {
 	$db = JFactory::getDbo();
 
@@ -462,7 +467,7 @@ function get_number_of_codes_exported_to_onecard($voucher_id)
 // Order it by the ordering field.
 	$query->select('sum(' . $db->quoteName('number') . ')');
 	$query->from($db->quoteName('#__onecard_export_voucher_detail'));
-	$query->where($db->quoteName('voucher') . ' = ' . $voucher_id);
+	$query->where($db->quoteName('event_id') . ' = ' . $event_id);
 
 	$query->where($db->quoteName('is_onecard') . ' = 1');
 
@@ -508,7 +513,7 @@ function get_quantity($data)
 	foreach ($data as $x => $item) {
 		$voucher_id = get_voucher_id($item->id);
 		if ($voucher_id) {
-			$item->quantity = get_number_of_codes($voucher_id, $item->max_sell, 0);
+			$item->quantity = get_number_of_codes($voucher_id, $item->id, $item->max_sell, 0);
 			$item->voucher = $voucher_id;
 		}
 		$response[$x] = $item;
@@ -565,7 +570,7 @@ switch ($task) {
 		if ($voucher_id) {
 			$response['status'] = 1;
 			$response['message'] = "Success";
-			$response['data'] = get_number_of_codes($voucher_id, $max_sell, $current_quan);
+			$response['data'] = get_number_of_codes($voucher_id, $event_id, $max_sell, $current_quan);
 		} else {
 			$response['status'] = -1;
 			$response['message'] = "Error: Không tìm thấy sự kiện";
