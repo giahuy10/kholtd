@@ -522,7 +522,7 @@ switch ($task) {
 	 */
 	case "check":
 		$merchant_id = $data->merchant_id;
-		$codes = $data->codes;
+		$codes =  JRequest::getVar('code');
 		
 		$response_check = check_code($codes, "check", $merchant_id);
 		$response['status'] = 1;
