@@ -523,8 +523,7 @@ switch ($task) {
 	case "check":
 		$merchant_id = $data->merchant_id;
 		$codes = $data->codes;
-		$codes = str_replace(" ", "", $codes);
-		$codes = explode(",", $codes);
+		
 		$response_check = check_code($codes, "check", $merchant_id);
 		$response['status'] = 1;
 		$response['message'] = "Success";
