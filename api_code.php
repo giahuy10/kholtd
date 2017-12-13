@@ -56,14 +56,14 @@ function check_code_oo($codes, $type, $merchantoc, $used_location = NULL)
 {
 	return $codes;
 }
-function check_code($codes, $type, $merchantoc, $used_location = NULL)
+function check_code($code, $type, $brand_id, $used_location = NULL)
 {
-	$brand_id = get_brand_id($merchantoc);
 
-	foreach ($codes as $code) {
+
+	$response = new stdClass();
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select($db->quoteName(array('a.id', 'code', 'barcode', 'serial', 'a.status', 'b.title', 'a.voucher', 'a.exported_id', 'b.brand', 'b.value', 'b.value')));
+		$query->select($db->quoteName(array('a.id', 'code', 'barcode', 'serial', 'a.status', 'b.title', 'a.voucher', 'a.exported_id', 'a.expired','b.brand', 'b.value', 'b.value')));
 		$query->select('b.id as voucher_id');
 		$query->from($db->quoteName('#__onecard_code', 'a'));
 		$query->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')');
@@ -73,55 +73,41 @@ function check_code($codes, $type, $merchantoc, $used_location = NULL)
 		//$result['$code'] = $query->__toString();
 
 		if ($result) {
-			if ($result->brand != 55 && !in_array($result->brand, $brand_id)) {
-				$response[$code]->status = -1;
-				$response[$code]->message = "Mã code " . $code . " không áp dụng tại địa điểm này";
-				$couponError[$code] = array('dealCode' => $code, 'msg' => 'Mã code ' . $code . ' không áp dụng tại địa điểm này ');
+			if (in_array($result->brand, $brand_id)) {
+				$response->status = -1;
+				$response->message = "Mã code " . $code . " không áp dụng tại địa điểm này";
+				$response->data = NULL;
 
 			} elseif ($result->status == 3) {
-				$response[$code]->status = -1;
-				$response[$code]->message = "Mã code " . $code . " đã được sử dụng";
-				$couponError[$code] = array('dealCode' => $code, 'msg' => 'Mã code ' . $code . ' đã được sử dụng');
+				$response->status = -1;
+				$response->message = "Mã code " . $code . " đã được sử dụng";
+				
 				$response->data = NULL;
 			} elseif (!$result->exported_id) {
-				$response[$code]->status = -1;
-				$response[$code]->message = "Mã code " . $code . " chưa được bán";
-				$couponError[$code] = array('dealCode' => $code, 'msg' => 'Mã code ' . $code . ' chưa được bán');
+				$response->status = -1;
+				$response->message = "Mã code " . $code . " chưa được bán";
 				$response->data = NULL;
-			} elseif (strtotime(get_expired($result->voucher, $result->exported_id)) < strtotime(date("Y-m-d"))) {
-				$response[$code]->status = -1;
-				$response[$code]->message = "Mã code " . $code . " đã hết hạn sử dụng";
-				$couponError[$code] = array('dealCode' => $code, 'msg' => 'Mã code ' . $code . ' đã hết hạn sử dụng');
+			} elseif (strtotime($result->expired) < strtotime(date("Y-m-d"))) {
+				$response->status = -1;
+				$response->message = "Mã code " . $code . " đã hết hạn sử dụng";
+				
 				$response->data = NULL;
 			} else {
-				$response[$code]->status = 1;
-				$response[$code]->message = "Mã code " . $code . " hợp lệ! ";
-				$allDiscount += $result->value;
-				$arrCoupons[$result->voucher_id]['total'] = $result->value;
-				$arrCoupons[$result->voucher_id]['total_f'] = number_format($result->value);
-				if ($type == "active") {
-					$response[$code]->message .= "Kích hoạt thành công!";
-					$object = new stdClass();
-					// Must be a valid primary key value.
-					$object->id = $result->id;
-					$object->status = 3;
-					$object->used_date = date("Y-m-d H:i:s");
-					$object->used_location = $used_location;
-					// Update their details in the users table using id as the primary key.
-					$active_code = JFactory::getDbo()->updateObject('#__onecard_code', $object, 'id');
-				}
+				$response->status = 1;
+				$response->message = "Mã code " . $code . " hợp lệ! ";
+				
 				$response->data = $result;
 			}
 		} else {
-			$response[$code]->status = -1;
-			$response[$code]->message = "Không tìm thấy mã code " . $code;
-			$response[$code]->data = NULL;
-			$couponError[$code] = array('dealCode' => $code, 'msg' => 'Không tìm thấy mã code ' . $code);
+			$response->status = -1;
+			$response->message = "Không tìm thấy mã code " . $code;
+			$response->data = NULL;
+		
 		}
 
 
-	}
-	return array('couponError' => $couponError, 'allDiscount' => $allDiscount, 'arrCoupons' => $arrCoupons);
+	
+	return $response;
 	//return $codes;
 }
 function get_voucher_type($voucher_id)
