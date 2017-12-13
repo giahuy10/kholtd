@@ -536,7 +536,7 @@ switch ($task) {
 		break;
 	case "active":
 
-		$code = $data->code;
+		$code = JRequest::getVar('code');
 		$response = active_code($code);
 		log_api("code", "active", $data, $response);
 
