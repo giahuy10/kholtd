@@ -77,32 +77,32 @@ function check_code($code, $type, $brand_id, $used_location = NULL)
 		if ($result) {
 			if (in_array($result->brand, $brand_id)) {
 				$response->status = -1;
-				$response->message = "Mã code " . $code . " không áp dụng tại địa điểm này";
+				$response->message = "Mã giảm giá " . $code . " không áp dụng tại địa điểm này";
 				$response->data = NULL;
 
 			} elseif ($result->status == 3) {
 				$response->status = -1;
-				$response->message = "Mã code " . $code . " đã được sử dụng";
+				$response->message = "Mã giảm giá " . $code . " đã được sử dụng";
 				
 				$response->data = NULL;
 			} elseif (!$result->exported_id) {
 				$response->status = -1;
-				$response->message = "Mã code " . $code . " chưa được bán";
+				$response->message = "Mã giảm giá " . $code . " chưa được bán";
 				$response->data = NULL;
 			} elseif (strtotime($result->expired) < strtotime(date("Y-m-d"))) {
 				$response->status = -1;
-				$response->message = "Mã code " . $code . " đã hết hạn sử dụng";
+				$response->message = "Mã giảm giá " . $code . " đã hết hạn sử dụng";
 				
 				$response->data = NULL;
 			} else {
 				$response->status = 1;
-				$response->message = "Mã code " . $code . " hợp lệ! ";
+				$response->message = "Mã giảm giá " . $code . " hợp lệ! ";
 				
 				$response->data = $result;
 			}
 		} else {
 			$response->status = -1;
-			$response->message = "Không tìm thấy mã code " . $code;
+			$response->message = "Không tìm thấy mã giảm giá " . $code;
 			$response->data = NULL;
 		
 		}
