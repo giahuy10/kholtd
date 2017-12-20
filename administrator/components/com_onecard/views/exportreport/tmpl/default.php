@@ -55,7 +55,7 @@ $report_type = 2;
 //echo $date_from."-".$date_to;
 // Get a db connection.
 $link = "index.php?option=com_onecard&view=exportreport&task=export&date_from=" . $date_from . "&date_to=" . $date_to . "&onecard_voucher=" . $onecard_voucher . "&onecard_brand=" . $onecard_brand . "&is_onecard=" . $is_onecard . "&type=" . $type . "&unit=" . $unit . "&onecard_partner=" . $onecard_partner . "&onecard_event=" . $onecard_event;
-echo "LINK nhes: ".$link;
+//echo "LINK nhes: ".$link;
 $db = JFactory::getDbo();
 
 // Create a new query object.

@@ -20,8 +20,7 @@ $user       = JFactory::getUser();
 $option = JRequest::getVar('option');
 $view = JRequest::getVar('view');
 
-$date_range = JRequest::getVar('daterange');
-$date_range = explode(" - ",$date_range);
+
 $date_from = JRequest::getVar('date_from');
 $date_to = JRequest::getVar('date_to');
 $onecard_voucher = JRequest::getVar('onecard_voucher');
