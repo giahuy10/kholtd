@@ -66,7 +66,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 <?php echo $this->form->renderField('expired'); ?>
 <?php echo $this->form->renderField('voucher'); ?>
 <?php echo $this->form->renderField('status'); ?>
-
+<?php echo $this->form->renderField('virtual_code'); ?>
 
                    
                 </fieldset>

@@ -22,8 +22,8 @@ $view = JRequest::getVar('view');
 
 $date_range = JRequest::getVar('daterange');
 $date_range = explode(" - ",$date_range);
-$date_from = $date_range[0];
-$date_to = $date_range[1];
+$date_from = JRequest::getVar('date_from');
+$date_to = JRequest::getVar('date_to');
 $onecard_voucher = JRequest::getVar('onecard_voucher');
 $onecard_voucher=implode(",",$onecard_voucher);
 
@@ -62,9 +62,9 @@ $query = $db->getQuery(true);
 	->join('INNER', $db->quoteName('#__onecard_ncc', 'e') . ' ON (' . $db->quoteName('d.ncc') . ' = ' . $db->quoteName('e.id') . ')');
   
 	if ($date_from)
-	//$query->where('DATE('.$db->quoteName('b.created') . ') >= '.$db->quote($date_from));
+		$query->where('DATE('.$db->quoteName('b.created') . ') >= '.$db->quote($date_from));
  	if ($date_to)
-	//$query->where('DATE('.$db->quoteName('b.created') . ') <= '.$db->quote($date_to));	
+		$query->where('DATE('.$db->quoteName('b.created') . ') <= '.$db->quote($date_to));	
 	
 	if ($onecard_ncc)
 	$query->where($db->quoteName('e.id') . ' IN ( '.$onecard_ncc.')');
@@ -82,6 +82,7 @@ $query = $db->getQuery(true);
 		$query->where($db->quoteName('c.unit') . ' = '.$unit);
 	
 		$query->where($db->quoteName('a.state') . ' = 1');
+$query->where($db->quoteName('a.virtual_code') . ' != 1');
 	$group = array('a.voucher','a.input_price');
 	
 	$query->group($group);
@@ -93,11 +94,21 @@ $db->setQuery($query);
 // Load the results as a list of stdClass objects (see later for more options on retrieving data).
 $results = $db->loadObjectList();
 ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script src="<?php echo JUri::root()?>administrator/components/com_inventory/assets/js/jquery.table2excel.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    $( ".datepicker" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    }
+	);
+  } );
+  </script>
 <style>
 	.chzn-container, .witdh100 {
 		width: 100% !important;
@@ -148,25 +159,13 @@ $results = $db->loadObjectList();
 	
 
 		
-		<label>Thời gian</label>
-		<?php 
-$date = date("Y-m-d");// current date
-$date2 = strtotime(date("Y-m-d", strtotime($date)) . " -1 month");
-
-?>
-		<input type="text" name="daterange" value="<?php echo date("Y-m-d",$date2);?> - <?php echo date("Y-m-d")?>" class="witdh100" />
+		<label>Thời gian nhập kho</label>
+		<p>Từ: <input type="text" class="datepicker" name="date_from" value="<?php echo $date_from ?>"></p>
+		<p>Đến: <input type="text" class="datepicker" name="date_to" value="<?php echo $date_to ?>"></p>
 		<br/><br/>
 <button class="btn btn-info">Lọc dữ liệu</button>
 
-<script type="text/javascript">
-$(function() {
-    $('input[name="daterange"]').daterangepicker({
-		locale: {
-            format: 'YYYY-MM-DD'
-        }
-	});
-});
-</script>
+
 
 
 	</div>
@@ -204,6 +203,22 @@ $(function() {
 		<input type="hidden" name="view" value="<?php echo $view?>"/>
 	<tbody>	
 	<?php 
+$excel_data = array();
+$array_title = new stdClass();
+$array_title->id = "ID";
+$array_title->voucher = "Sản phẩm";
+$array_title->brand = "Nhãn hiệu";
+$array_title->quantity = "Số lượng";
+$array_title->price = "Giá";
+$array_title->total = "Thành tiền";
+$array_title->exported = "Đã xuất";
+$array_title->available = "Tồn kho";
+$array_title->type = "Loại";
+$array_title->ncc = "Phân phối";
+$array_title->date = "Ngày hết hạn";
+									//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
+$excel_data[0] = $array_title;
+$index=1;
 		$total_import = 0;
 		$total_import_value = 0;
 		$total_inventory = 0;
@@ -230,7 +245,22 @@ $(function() {
 			<td><?php if ($report_type == 1) echo date("d-m-Y",strtotime($result->expired)); else echo date("d-m-Y",strtotime($result->exported_date)); ?></td>
 			
 		</tr>
-	<?php }?>
+		<?php $row_export = new stdClass();
+			$row_export->voucher_id = $result->voucher_id;
+			$row_export->voucher_name = $result->voucher_name;
+			$row_export->brand = $result->brand;
+			$row_export->quantity = $result->quantity;
+			$row_export->price = $result->price;
+			$row_export->total = $result->quantity * $result->price;
+			$row_export->exported = OnecardHelper::get_number_of_voucher($result->voucher_id, "2,3", $result->price);
+			$row_export->available = OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price);
+			$row_export->type = OnecardHelper::get_type_name($result->type);
+			$row_export->ncc = ($result->unit == 2 ? "OneCard" : "NCC");
+			$row_export->expired_date = date("d-m-Y", strtotime($result->expired));
+			?>
+				<?php $excel_data[$index] = $row_export;
+			$index++;
+			 }?>
 	
 		</tbody>
 		<tfoot>
@@ -253,7 +283,15 @@ $(function() {
 </table>
 </div>
 </div>
-<a href="#" class="btn btn-success" onclick="export()" id="export"><span class="icon-download" aria-hidden="true"></span>Download Excel file</a>
+<?php $task = JRequest::getVar('task');
+if ($task == "export") {
+
+	OnecardHelper::export_excel($excel_data, date("H_i_d_m_Y"));
+}
+
+?>
+	<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=importreport&task=export"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download</a>
+
 </div>
 <script>
 	(function() {

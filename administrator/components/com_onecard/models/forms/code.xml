@@ -22,6 +22,12 @@
       <option value="2">Exported</option>
       <option value="3">Used</option>
     </field>
+     
+<field name="virtual_code" type="list" label="Code ảo" description="COM_ONECARD_FORM_DESC_code_STATUS" required="true" default="1" multiple ="false" size="">
+  <option value="0">Không</option>
+  <option value="1">Ảo</option>
+  
+</field>
     <field name="filter_voucher" type="sql" label="COM_ONECARD_SELECT_LBL_CODE_VOUCHER" key_field="key_field" value_field="value_field" class="inputbox" onchange="this.form.submit()" translate="true" query="SELECT '' AS `key_field`, &#9;'COM_ONECARD_SELECT_LBL_CODE_VOUCHER' &#9;AS `value_field`  UNION  SELECT  `id` &#9;AS key_field ,  `title` &#9;AS value_field  FROM `#__onecard_voucher` "/>
   </fieldset>
 </form>

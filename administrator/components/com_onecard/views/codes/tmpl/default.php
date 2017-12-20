@@ -182,7 +182,7 @@ if (!empty($this->extra_sidebar))
 <th>		<?php echo JHtml::_('grid.sort', 'COM_ONECARD_FORM_LBL_code_STATE', 'a.`state`', $listDirn, $listOrder); ?>		</th>
 <th>		<?php echo JHtml::_('grid.sort', 'COM_ONECARD_CODES_CODE', 'a.`code`', $listDirn, $listOrder); ?>		</th>
 <th>		<?php echo JHtml::_('grid.sort', 'COM_ONECARD_CODES_BARCODE', 'a.`barcode`', $listDirn, $listOrder); ?>		</th>
-
+<th>		<?php echo JHtml::_('grid.sort', 'PINCODE/Serial', 'a.`serial`', $listDirn, $listOrder); ?>		</th>
 <th>		<?php echo JHtml::_('grid.sort', 'COM_ONECARD_CODES_VOUCHER', 'a.`voucher`', $listDirn, $listOrder); ?>		</th>
 <th>		<?php echo JHtml::_('grid.sort', 'COM_ONECARD_CODES_STATUS', 'a.`status`', $listDirn, $listOrder); ?>		</th>
                 	
@@ -248,9 +248,9 @@ if (!empty($this->extra_sidebar))
 					</td>
                 <?php endif; ?>
 				
-				<th>		<?php echo $item->code; ?>		</th>
+				<th>		<a href="index.php?option=com_onecard&view=code&layout=edit&id=<?php echo $item->id ?>"><?php echo $item->code; ?></a>		</th>
 <th>		<?php echo $item->barcode; ?>		</th>
-
+<th>		<?php echo $item->serial; ?>		</th>
 <th>		<?php echo $item->voucher; ?>		</th>
 <th>		<?php echo OnecardHelper::get_status_name($item->status); ?>		</th>
 

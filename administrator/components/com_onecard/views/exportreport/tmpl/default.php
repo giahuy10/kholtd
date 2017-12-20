@@ -19,23 +19,27 @@ $user       = JFactory::getUser();
 $option = JRequest::getVar('option');
 $view = JRequest::getVar('view');
 
-$date_range = JRequest::getVar('daterange');
-$date_range = explode(" - ",$date_range);
-$date_from = $date_range[0];
-$date_to = $date_range[1];
+
+$date_from = JRequest::getVar('date_from');
+$date_to = JRequest::getVar('date_to');
 $onecard_voucher = JRequest::getVar('onecard_voucher');
-$onecard_voucher=implode(",",$onecard_voucher);
+if (is_array($onecard_voucher))
+	$onecard_voucher=implode(",",$onecard_voucher);
 
 $onecard_brand = JRequest::getVar('onecard_brand');
 //var_dump($onecard_brand);
+if (is_array($onecard_brand))
 $onecard_brand=implode(",",$onecard_brand);
 //var_dump($onecard_brand);
+$is_onecard = JRequest::getVar('is_onecard');
 $type = JRequest::getVar('type');
 $unit = JRequest::getVar('unit');
 $onecard_partner = JRequest::getVar('onecard_partner');
+if (is_array($onecard_partner))
 $onecard_partner=implode(",",$onecard_partner);
 
 $onecard_event = JRequest::getVar('onecard_event');
+if (is_array($onecard_event))
 $onecard_event=implode(",",$onecard_event);
 $group_parter = JRequest::getVar('group_parter');
 $group_event = JRequest::getVar('group_event');
@@ -50,6 +54,8 @@ if (JRequest::getVar('report_base')) {
 $report_type = 2;
 //echo $date_from."-".$date_to;
 // Get a db connection.
+$link = "index.php?option=com_onecard&view=exportreport&task=export&date_from=" . $date_from . "&date_to=" . $date_to . "&onecard_voucher=" . $onecard_voucher . "&onecard_brand=" . $onecard_brand . "&is_onecard=" . $is_onecard . "&type=" . $type . "&unit=" . $unit . "&onecard_partner=" . $onecard_partner . "&onecard_event=" . $onecard_event;
+echo "LINK nhes: ".$link;
 $db = JFactory::getDbo();
 
 // Create a new query object.
@@ -85,7 +91,8 @@ $query = $db->getQuery(true);
 		$query->where($db->quoteName('c.type') . ' = '.$type);
 	if ($unit)
 		$query->where($db->quoteName('c.unit') . ' = '.$unit);
-	
+	if ($is_onecard == 2)
+		$query->where($db->quoteName('a.is_onecard') . ' = 1' );
 	//$query->where($db->quoteName('a.state') . ' = 1');
 	$query->where($db->quoteName('b.state') . ' = 1');
 	$query->where($db->quoteName('c.state') . ' = 1');
@@ -96,18 +103,28 @@ $query = $db->getQuery(true);
 	
 	//$query->group($report_base);
 	$query->order($db->quoteName('a.exported_id') . ' DESC');
-//	echo $query->__toString();	
+	//echo $query->__toString();	
 // Reset the query using our newly populated query object.
 $db->setQuery($query);
 
 // Load the results as a list of stdClass objects (see later for more options on retrieving data).
 $results = $db->loadObjectList();
 ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script src="<?php echo JUri::root()?>administrator/components/com_inventory/assets/js/jquery.table2excel.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    $( ".datepicker" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    }
+	);
+  } );
+  </script>
 <style>
 	.chzn-container, .witdh100 {
 		width: 100% !important;
@@ -148,7 +165,13 @@ $results = $db->loadObjectList();
 					<option value="2" <?php if ($unit == 2) echo "selected"?>>OneCard</option>
 					
 				</select>		
-	
+		<label>Mua từ OneCard.vn</label>		
+				<select name="is_onecard" onchange="this.form.submit()">
+					<option value="">-- Lọc --</option>
+					<option value="1" <?php if ($is_onecard == 1) echo "selected" ?>>Không</option>
+					<option value="2" <?php if ($is_onecard == 2) echo "selected" ?>>Có</option>
+					
+				</select>
 
 		<label>Đối tác </label>
 		<?php OnecardHelper::gen_select("onecard_partner",$onecard_partner)?>
@@ -156,24 +179,18 @@ $results = $db->loadObjectList();
 		<label>Sự kiện </label>
 		<?php OnecardHelper::gen_select("onecard_event",$onecard_event)?>
 		<label>Thời gian</label>
+		<p>Từ: <input type="text" class="datepicker" name="date_from" value="<?php echo $date_from ?>"></p>
+		<p>Đến: <input type="text" class="datepicker" name="date_to" value="<?php echo $date_to ?>"></p>
 		<?php 
 		$date = date("Y-m-d");// current date
 	$date2 = strtotime(date("Y-m-d", strtotime($date)) . " -1 month");
 
 ?>
-		<input type="text" name="daterange" value="<?php echo date("Y-m-d",$date2);?> - <?php echo date("Y-m-d")?>" class="witdh100" />
+		
 		<br/><br/>
 <button class="btn btn-info">Lọc dữ liệu</button>
 
-<script type="text/javascript">
-$(function() {
-    $('input[name="daterange"]').daterangepicker({
-		locale: {
-            format: 'YYYY-MM-DD'
-        }
-	});
-});
-</script>
+
 
 	</div>
 
@@ -208,8 +225,24 @@ $(function() {
 		<input type="hidden" name="view" value="<?php echo $view?>"/>
 		<tbody>
 	<?php 
+		$excel_data = array();
+		$array_title = new stdClass();
+		$array_title->id = "ID";
+		$array_title->voucher = "Sản phẩm";
+		$array_title->brand = "Nhãn hiệu";
+		$array_title->quantity = "Số lượng";
+		$array_title->price = "Giá";
+		$array_title->total = "Thành tiền";
+		$array_title->type = "Loại";
+		$array_title->ncc = "Phân phối";
+		$array_title->partner = "Đối tác";
+		$array_title->event = "Sự kiện";
+		$array_title->date = "Ngày xuất";
+									//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
+		$excel_data[0] = $array_title;
 		$total_quantity = 0;
 		$total_revenue = 0;
+		$index = 1;
 		foreach ($results as $result) {
 			$total_quantity+=$result->quantity;
 			if ($result->price == 0) {
@@ -238,6 +271,23 @@ $(function() {
 			<td><?php if ($report_type == 1) echo date("d-m-Y",strtotime($result->expired)); else echo date("d-m-Y",strtotime($result->exported_date)); ?></td>
 			
 		</tr>
+		<?php 
+			$row_export = new stdClass();
+			$row_export->voucher_id = $result->voucher_id;
+			$row_export->voucher_name = $result->voucher_name;
+			$row_export->brand = $result->brand;
+			$row_export->quantity = $result->quantity;
+			$row_export->price = $result->price;
+			$row_export->total = $result->quantity * $result->price;
+			$row_export->type = OnecardHelper::get_type_name($result->type);
+			$row_export->unit = ($result->unit == 2 ? "OneCard" : "NCC");
+			$row_export->partner = $result->partner;
+			$row_export->event = $result->vouceventher_id;
+			$row_export->exported_date = $result->exported_date;
+		?>
+		<?php $excel_data[$index] = $row_export;
+			$index++;
+		?>
 	<?php }?>
 		</tbody>
 	<tfoot>
@@ -258,7 +308,15 @@ $(function() {
 		</tfoot>
 </table>
 		</div></div>
-<a href="#" class="btn btn-success" onclick="export()" id="export"><span class="icon-download" aria-hidden="true"></span>Download Excel file</a>
+		<?php $task = JRequest::getVar('task');
+	if ($task == "export") {
+
+		OnecardHelper::export_excel($excel_data, date("H_i_d_m_Y"));
+	}
+
+	?>
+	<a href="<?php echo JURI::root() ?>administrator/<?php echo $link?>"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download</a>
+
 </div>
 <script>
 	(function() {
