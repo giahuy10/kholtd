@@ -47,7 +47,7 @@ class JConfig {
 	public $offline = '0';
 	public $offline_image = '';
 	public $offline_message = 'This site is down for maintenance.<br />Please check back again soon.';
-	public $offset = 'Asia/Ho_Chi_Minh';
+	public $offset = 'UTC';
 	public $offset_user = 'UTC';
 	public $password = 'giahuytk102L';
 	public $robots = '';

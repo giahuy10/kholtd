@@ -755,6 +755,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 							$query = $db->getQuery(true);
 							$fields = array(
 								$db->quoteName('status') . ' = 2',
+								$db->quoteName('virtual_code') . ' = 0',
 								$db->quoteName('exported_id') . ' = '.$export_id,
 								$db->quoteName('exported_detail_id') . ' = '.$detail->id,
 								$db->quoteName('export_price') . ' = ' . $detail->price

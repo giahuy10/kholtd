@@ -43,6 +43,8 @@ $group_event = JRequest::getVar('group_event');
 $report_type = 1;
 //echo $date_from."-".$date_to;
 // Get a db connection.
+$link = "index.php?option=com_onecard&view=exportreport&task=export&date_from=" . $date_from . "&date_to=" . $date_to . "&onecard_voucher=" . $onecard_voucher . "&onecard_brand=" . $onecard_brand . "&is_onecard=" . $is_onecard . "&type=" . $type . "&unit=" . $unit . "&onecard_partner=" . $onecard_partner . "&onecard_event=" . $onecard_event;
+
 $db = JFactory::getDbo();
 
 // Create a new query object.
@@ -86,7 +88,7 @@ $query->where($db->quoteName('a.virtual_code') . ' != 1');
 	
 	$query->group($group);
 	$query->order($db->quoteName('c.expired') . ' ASC');
-//	echo $query->__toString();	
+echo $query->__toString();	
 // Reset the query using our newly populated query object.
 $db->setQuery($query);
 
@@ -287,9 +289,9 @@ if ($task == "export") {
 
 	OnecardHelper::export_excel($excel_data, date("H_i_d_m_Y"));
 }
-
+ 
 ?>
-	<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=importreport&task=export"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download</a>
+	<a href="<?php echo JURI::root() ?>administrator/<?php echo $link ?>"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download</a>
 
 </div>
 <script>

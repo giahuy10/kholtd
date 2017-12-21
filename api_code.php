@@ -358,6 +358,7 @@ function export_codes_by_eventoc($data)
 			//postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
 			$sms_code .= $code->code . " ";
 			$code->status = 2;
+			$code->virtual_code = 0;
 			$code->exported_id = $export->id;
 			$code->export_price = $item->event->price;
 			$update_code_status = JFactory::getDbo()->updateObject('#__onecard_code', $code, 'id');
