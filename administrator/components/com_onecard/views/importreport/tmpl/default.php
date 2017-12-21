@@ -88,7 +88,7 @@ $query->where($db->quoteName('a.virtual_code') . ' != 1');
 	
 	$query->group($group);
 	$query->order($db->quoteName('c.expired') . ' ASC');
-echo $query->__toString();	
+//echo $query->__toString();	
 // Reset the query using our newly populated query object.
 $db->setQuery($query);
 
