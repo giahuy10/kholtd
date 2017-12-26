@@ -357,7 +357,7 @@ echo $this->form->renderField('list_templates'); ?>
 		$data_json = "";
 		$post_code = array();	
 		foreach ($rows as $row) {
-				if ($count_insert>0 && $row[0]!="") {
+				if ($count_insert>0 && $row[1]!="") {
 						$exported_code = new stdClass();
 						$nr = $row[0];	
 						$client = $row[1];

@@ -304,7 +304,7 @@ function export_codes_by_eventoc($data)
 		if ($item->event->double_code == 1) {
 			$export_detail[$key]->number = $export_detail[$key]->number*2;
 		}
-		$export_detail[$key]->price = $item->price;
+		$export_detail[$key]->price = $item->event->price_sell;
 		if ($item->event->exprie_type > 0) {
 			$date = date("Y-m-d");// current date
 			$exchange_date = " +" . $item->event->exprie_type . " day";
@@ -333,7 +333,7 @@ function export_codes_by_eventoc($data)
 		$export_detail[$key]->exported_code = 1;
 		$export_detail[$key]->is_onecard = 1;
 		$export_detail[$key]->event_id = $item->event->id;
-		$json_array[$i] = '"list_templates' . $i . '" : {"voucher" :"' . $export_detail[$key]->voucher . '" , "price" :"' . $export_detail[$key]->price . '" , "number" :"' . $export_detail[$key]->number . '" , "expired" : "' . $expired_number . '"}';
+		$json_array[$i] = '"list_templates' . $i . '" : {"voucher" :"' . $export_detail[$key]->voucher . '" , "price" :"' . $export_detail[$key]->price_sell . '" , "number" :"' . $export_detail[$key]->number . '" , "expired" : "' . $expired_number . '"}';
 		$i++;
 
 		$import_export_detail = JFactory::getDbo()->insertObject('#__onecard_export_voucher_detail', $export_detail[$key]);
@@ -360,7 +360,7 @@ function export_codes_by_eventoc($data)
 			$code->status = 2;
 			$code->virtual_code = 0;
 			$code->exported_id = $export->id;
-			$code->export_price = $item->event->price;
+			$code->export_price = $item->event->price_sell;
 			$update_code_status = JFactory::getDbo()->updateObject('#__onecard_code', $code, 'id');
 		}
 		if ($voucher_type == 1) {
