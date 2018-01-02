@@ -55,7 +55,7 @@ $query = $db->getQuery(true);
 // Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 
 	$query
-    ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'a.input_price as price', 'c.type', 'c.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc' ))
+    ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'a.input_price as price', 'c.type', 'a.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc', 'a.created' ))
     ->from($db->quoteName('#__onecard_code', 'a'))
   
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
@@ -84,7 +84,7 @@ $query = $db->getQuery(true);
 	
 		$query->where($db->quoteName('a.state') . ' = 1');
 $query->where($db->quoteName('a.virtual_code') . ' != 1');
-	$group = array('a.voucher','a.input_price');
+	$group = array('a.voucher','a.input_price', 'a.expired', 'a.created');
 	
 	$query->group($group);
 	$query->order($db->quoteName('c.expired') . ' ASC');
@@ -196,6 +196,7 @@ $results = $db->loadObjectList();
 		<th><span><?php if ($report_type == 1) echo "Tồn kho"; else echo "Sự kiện";?></span></th>
 		<th><span>Loại</span></th>
 		<th><span>Phân phối</span></th>
+		<th><span>Ngày nhập</span></th>
 		<th><span><?php if ($report_type == 1) echo "Hạn sử dụng"; else echo "Ngày Xuất";?></span></th>
 		
 	</tr>
@@ -226,7 +227,7 @@ $index=1;
 		foreach ($results as $result) {
 			$total_import += $result->quantity;
 			$total_import_value += $result->quantity*$result->price;
-			$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1, $result->price)*$result->price;
+			$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1, $result->price, $result->created, $result->expired)*$result->price;
 			?>
 		<tr>
 			
@@ -238,11 +239,12 @@ $index=1;
 			<td><?php echo number_format($result->quantity*$result->price)?></td>
 			
 			
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3",$result->price);  else echo $result->partner?></td>
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price);  else echo $result->event?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3",$result->price, $result->created, $result->expired);  else echo $result->partner?></td>
+			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price, $result->created, $result->expired);  else echo $result->event?></td>
 			<td><?php echo OnecardHelper::get_type_name($result->type)?></td>
 			
 			<td><?php if ($result->unit == 2) echo "OneCard"; else echo "NCC"?></td>
+			<td><?php  echo date("d-m-Y", strtotime($result->created)); ?></td>
 			<td><?php if ($report_type == 1) echo date("d-m-Y",strtotime($result->expired)); else echo date("d-m-Y",strtotime($result->exported_date)); ?></td>
 			
 		</tr>
@@ -253,10 +255,11 @@ $index=1;
 			$row_export->quantity = $result->quantity;
 			$row_export->price = $result->price;
 			$row_export->total = $result->quantity * $result->price;
-			$row_export->exported = OnecardHelper::get_number_of_voucher($result->voucher_id, "2,3", $result->price);
-			$row_export->available = OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price);
+			$row_export->exported = OnecardHelper::get_number_of_voucher($result->voucher_id, "2,3", $result->price, $result->created, $result->expired);
+			$row_export->available = OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price, $result->created, $result->expired);
 			$row_export->type = OnecardHelper::get_type_name($result->type);
 			$row_export->ncc = ($result->unit == 2 ? "OneCard" : "NCC");
+	$row_export->expired_date = date("d-m-Y", strtotime($result->created));
 			$row_export->expired_date = date("d-m-Y", strtotime($result->expired));
 			?>
 				<?php $excel_data[$index] = $row_export;
@@ -275,6 +278,7 @@ $index=1;
 			<td><?php echo number_format($total_import_value)?></td>
 			<td></td>
 			<td><?php echo number_format($total_inventory)?></td>
+			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
