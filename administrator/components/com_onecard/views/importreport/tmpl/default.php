@@ -24,26 +24,33 @@ $view = JRequest::getVar('view');
 $date_from = JRequest::getVar('date_from');
 $date_to = JRequest::getVar('date_to');
 $onecard_voucher = JRequest::getVar('onecard_voucher');
-$onecard_voucher=implode(",",$onecard_voucher);
+if (is_array($onecard_voucher))
+	$onecard_voucher = implode(",", $onecard_voucher);
+
 
 $onecard_brand = JRequest::getVar('onecard_brand');
 //var_dump($onecard_brand);
-$onecard_brand=implode(",",$onecard_brand);
+if (is_array($onecard_brand))
+	$onecard_brand = implode(",", $onecard_brand);
 //var_dump($onecard_brand);
 $type = JRequest::getVar('type');
 $unit = JRequest::getVar('unit');
 $onecard_partner = JRequest::getVar('onecard_partner');
-$onecard_partner=implode(",",$onecard_partner);
+if (is_array($onecard_partner))
+	$onecard_partner = implode(",", $onecard_partner);
 $onecard_ncc = JRequest::getVar('onecard_ncc');
+if (is_array($onecard_ncc))
 $onecard_ncc=implode(",",$onecard_ncc);
+
 $onecard_event = JRequest::getVar('onecard_event');
+if (is_array($onecard_event))
 $onecard_event=implode(",",$onecard_event);
 $group_parter = JRequest::getVar('group_parter');
 $group_event = JRequest::getVar('group_event');
 $report_type = 1;
 //echo $date_from."-".$date_to;
 // Get a db connection.
-$link = "index.php?option=com_onecard&view=exportreport&task=export&date_from=" . $date_from . "&date_to=" . $date_to . "&onecard_voucher=" . $onecard_voucher . "&onecard_brand=" . $onecard_brand . "&is_onecard=" . $is_onecard . "&type=" . $type . "&unit=" . $unit . "&onecard_partner=" . $onecard_partner . "&onecard_event=" . $onecard_event;
+$link = "index.php?option=com_onecard&view=importreport&task=export&date_from=" . $date_from . "&date_to=" . $date_to . "&onecard_voucher=" . $onecard_voucher . "&onecard_brand=" . $onecard_brand . "&is_onecard=" . $is_onecard . "&type=" . $type . "&unit=" . $unit . "&onecard_partner=" . $onecard_partner . "&onecard_event=" . $onecard_event;
 
 $db = JFactory::getDbo();
 
@@ -217,6 +224,7 @@ $array_title->exported = "Đã xuất";
 $array_title->available = "Tồn kho";
 $array_title->type = "Loại";
 $array_title->ncc = "Phân phối";
+$array_title->created = "Ngày nhập";
 $array_title->date = "Ngày hết hạn";
 									//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
 $excel_data[0] = $array_title;
@@ -259,7 +267,7 @@ $index=1;
 			$row_export->available = OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price, $result->created, $result->expired);
 			$row_export->type = OnecardHelper::get_type_name($result->type);
 			$row_export->ncc = ($result->unit == 2 ? "OneCard" : "NCC");
-	$row_export->expired_date = date("d-m-Y", strtotime($result->created));
+			$row_export->created = date("d-m-Y", strtotime($result->created));
 			$row_export->expired_date = date("d-m-Y", strtotime($result->expired));
 			?>
 				<?php $excel_data[$index] = $row_export;
@@ -269,7 +277,7 @@ $index=1;
 		</tbody>
 		<tfoot>
 	<tr>
-			<td>Tong</td>
+			<td>Tổng</td>
 			<td></td>
 			<td></td>
 			<td><?php echo number_format($total_import)?></td>
