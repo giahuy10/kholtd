@@ -282,7 +282,7 @@ function export_codes_by_eventoc($data)
 	$export->order_number = $order->cart_code;
 	$export->state = 1;
 	$export->event = 4;
-	$export->created = date("Y-m-d H:i:s");
+	$export->created = date("Y-m-d H:i:s", $order->created);
 	$export->order_id = $order->id;
 	$export->note = "Đơn hàng mã " . $order->cart_code;
 	$import_export = JFactory::getDbo()->insertObject('#__onecard_export_voucher', $export);		
