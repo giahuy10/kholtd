@@ -737,7 +737,7 @@ class OnecardHelper extends OnecardHelpersOnecard
 									'status' => 1,
 									'created' => strtotime(date('Y-m-d 23:59:59')),
 									'merchant_id' => self::get_merchant_oc_id($voucher_detail->brand),
-									'end_time' => strtotime($detail->expired),
+									'end_time' => strtotime($detail->expired. " 16:59:59"),
 									'price' => $voucher_detail->value,
 									'cart_detail_id' => 82,
 									'customer_id' => 1
