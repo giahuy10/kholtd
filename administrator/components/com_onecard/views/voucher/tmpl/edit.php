@@ -266,7 +266,48 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 		</button>
 	  </div>
 	</div>
-
+<!-- MUA CODE TU VTC-->
+<div class="modal hide fade" id="modal-buy">
+	  <div class="modal-header">
+		<button type="button" role="presentation" class="close" data-dismiss="modal">x</button>
+		<h3>Mua code từ VTC PAY</h3>
+	  </div>
+	  <div class="modal-body">
+		<div class="container">
+			
+				<div class="row-fluid">
+					<div class="span12">
+						
+						Giá trị: <?php echo number_format($this->item->value)?> vnđ <br/>
+						Loại: 
+						<select name="servicecode" id="servicecode">
+								<option value="VTC0027">Card Viettel</option>
+								<option value="VTC0029">Card Mobi</option>
+								<option value="VTC0028">Card Vina</option>
+								<option value="VTC0583">Grab</option>
+								
+						</select>
+						<p>Số lượng code</p>
+						<input type="number" name="quantity" id="quantity" class="inputbox" />
+						<br/>
+						
+						<button class="btn" id="buy_code">Mua code</button>	
+						
+					</div>
+				</div>
+					
+					
+				
+					
+				
+		</div>
+	  </div>
+	  <div class="modal-footer">
+		<button class="btn" type="button" data-dismiss="modal">
+		  <?php echo JText::_('JCANCEL'); ?>
+		</button>
+	  </div>
+	</div>
 
 <script>
 jQuery( document ).ready(function( $ ) {
@@ -298,12 +339,30 @@ jQuery( document ).ready(function( $ ) {
 
 	   
 	var code_need_renew = $('#code_need_renew option:selected').val();
-	alert(code_need_renew);
+	//alert(code_need_renew);
 	var new_expired = $('#new_expired').val();
 		$.ajax
 		({ 
 			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=renew_code&voucher_id=<?php echo $this->item->id?>',
 			data: {"code_need_renew": code_need_renew, "new_expired":new_expired},
+			type: 'post',
+			success: function(result)
+			{
+			   alert (result);
+			}
+		});
+	});
+
+	// BUY  CODE FROM VTC
+	$('#buy_code').click(function(){
+	var servicecode = $('#servicecode option:selected').val();
+	   
+	
+	var quantity = $('#quantity').val();
+		$.ajax
+		({ 
+			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=buy_code&voucher_id=<?php echo $this->item->id ?>',
+			data: {"quantity": quantity, "value":<?php echo $this->item->value?>,"servicecode":servicecode},
 			type: 'post',
 			success: function(result)
 			{
@@ -333,3 +392,4 @@ jQuery( document ).ready(function( $ ) {
 	});
 });
 </script>
+

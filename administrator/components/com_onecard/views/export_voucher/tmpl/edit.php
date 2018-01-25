@@ -117,7 +117,10 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 						</tr>
 						<?php $excel_data[$index]=$code;
 						$index++;
-					}?>
+					}
+					//echo "<pre>";
+					//var_dump($excel_data);
+					?>
 					</table>
 					<?php $task = JRequest::getVar('task');
 					if ($task == "export") {
@@ -227,7 +230,7 @@ echo $this->form->renderField('list_templates'); ?>
 			   
 			   if($imageFileType == "xlsx") {
 
-				   doExport($target_file, $voucher_id, $expired);
+				   doExport($target_file, $voucher_id, $expired, $this->item->id);
 				   
 			   }else {
 				   //doImportxls($target_file);
@@ -248,7 +251,7 @@ echo $this->form->renderField('list_templates'); ?>
 		}
 	}
 		
-	function doExport($fileExcel, $voucher_id, $expired){
+	function doExport($fileExcel, $voucher_id, $expired, $export_id){
   		
   		
 		//$inventory_code_uploaded = JFactory::getDbo()->insertObject('#__inventory_code_uploaded', $inventory_code_uploaded);
@@ -444,8 +447,9 @@ echo $this->form->renderField('list_templates'); ?>
 								'status' => 1,
 								'created' => strtotime(date('Y-m-d 23:59:59')),
 								'merchant_id' => OnecardHelper::get_merchant_oc_id($merchant_id),
-								'end_time' => strtotime($expired),
+								'end_time' => strtotime($expired_excel . " 16:59:59"),
 								'price' => $value,
+								'item_id' => $export_id,
 								'cart_detail_id' => 82,
 								'customer_id' => 1
 							);

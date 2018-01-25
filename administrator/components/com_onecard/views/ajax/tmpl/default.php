@@ -121,3 +121,10 @@ if ($type == "renew_code") { // RENEW CODE
 	//echo $query->__toString();
 	echo "Gia hạn thành công";
 }
+if ($type == "buy_code") { // BUY CODE FROM VTC
+	$quantity = JRequest::getVar('quantity');
+	$servicecode = JRequest::getVar('servicecode');
+	$value = JRequest::getVar('value');
+	$result = OnecardHelper::buy_vtc_code($quantity,$servicecode,$value);
+	echo $result;
+}
