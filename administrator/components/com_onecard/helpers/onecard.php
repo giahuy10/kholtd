@@ -293,11 +293,11 @@ class OnecardHelper extends OnecardHelpersOnecard
 	}
 	public static function buy_vtc_code($Quantity, $ServiceCode, $Amount){
 
-		//Onecardhelper::log_sql("requesData", "32324");
+		
 		require_once(JPATH_COMPONENT . '/libs/Nusoap/nusoap.php');
-		//Onecardhelper::log_sql("requesData", "2332");
+		
 		require_once(JPATH_COMPONENT . '/libs/Crypt/RSA.php');
-		//Onecardhelper::log_sql("requesData", "3");
+		
 		$OrgTransID = $_SERVER['REQUEST_TIME'];
 		$TransDate = date('YmdHis'); // Thời gian
 		$partnerCode = '0912345331'; // Partner code
@@ -617,8 +617,8 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 		$db->execute();
 		$num_rows = $db->getNumRows();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-		$results = $db->loadResult();
-		Onecardhelper::log_sql("get_number_of_voucher",$query->__toString());
+		//$results = $db->loadResult();
+		//Onecardhelper::log_sql("get_number_of_voucher",$query->__toString());
 		return ($num_rows);
 	}
 	public static function get_code_need_renew ($voucher_id) {
@@ -959,6 +959,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 									'created' => strtotime(date('Y-m-d 23:59:59')),
 									'merchant_id' => self::get_merchant_oc_id($voucher_detail->brand),
 									'end_time' => strtotime($detail->expired. " 16:59:59"),
+									'item_id' => $export_id,
 									'price' => $voucher_detail->value,
 									'cart_detail_id' => 82,
 									'customer_id' => 1

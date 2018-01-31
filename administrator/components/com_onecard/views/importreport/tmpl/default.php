@@ -62,7 +62,8 @@ $query = $db->getQuery(true);
 // Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 
 	$query
-    ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'a.input_price as price', 'c.type', 'a.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc', 'a.created' ))
+	->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'count(*) as quantity', 'a.input_price as price', 'c.type', 'a.expired' ,'c.unit as unit','a.type as type_code','e.id as ncc_id','e.title as ncc', 'a.created', 'SUM(case when status = 1 then 1 else 0 end) as number_available', 'SUM(case when status = 2 or status = 3 then 1 else 0 end) as number_exported' ))
+	
     ->from($db->quoteName('#__onecard_code', 'a'))
   
 	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
@@ -90,7 +91,7 @@ $query = $db->getQuery(true);
 		$query->where($db->quoteName('c.unit') . ' = '.$unit);
 	
 		$query->where($db->quoteName('a.state') . ' = 1');
-$query->where($db->quoteName('a.virtual_code') . ' != 1');
+		$query->where($db->quoteName('a.virtual_code') . ' != 1');
 	$group = array('a.voucher','a.input_price', 'a.expired', 'a.created');
 	
 	$query->group($group);
@@ -235,7 +236,8 @@ $index=1;
 		foreach ($results as $result) {
 			$total_import += $result->quantity;
 			$total_import_value += $result->quantity*$result->price;
-			$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1, $result->price, $result->created, $result->expired)*$result->price;
+			//$total_inventory += OnecardHelper::get_number_of_voucher($result->voucher_id,1, $result->price, $result->created, $result->expired)*$result->price;
+			$total_inventory += $result->number_available *  $result->price;
 			?>
 		<tr>
 			
@@ -247,8 +249,11 @@ $index=1;
 			<td><?php echo number_format($result->quantity*$result->price)?></td>
 			
 			
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3",$result->price, $result->created, $result->expired);  else echo $result->partner?></td>
-			<td><?php if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price, $result->created, $result->expired);  else echo $result->event?></td>
+			<td><?php //if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,"2,3",$result->price, $result->created, $result->expired);  else echo $result->partner;
+				echo $result->number_exported; ?></td>
+			<td><?php //if ($report_type == 1) echo OnecardHelper::get_number_of_voucher($result->voucher_id,1,$result->price, $result->created, $result->expired);  else echo $result->event;
+				echo $result->number_available;
+			?></td>
 			<td><?php echo OnecardHelper::get_type_name($result->type)?></td>
 			
 			<td><?php if ($result->unit == 2) echo "OneCard"; else echo "NCC"?></td>
@@ -263,8 +268,10 @@ $index=1;
 			$row_export->quantity = $result->quantity;
 			$row_export->price = $result->price;
 			$row_export->total = $result->quantity * $result->price;
-			$row_export->exported = OnecardHelper::get_number_of_voucher($result->voucher_id, "2,3", $result->price, $result->created, $result->expired);
-			$row_export->available = OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price, $result->created, $result->expired);
+			$row_export->exported = $result->number_exported; 
+			//OnecardHelper::get_number_of_voucher($result->voucher_id, "2,3", $result->price, $result->created, $result->expired);
+			$row_export->available = $result->number_available;
+			 //OnecardHelper::get_number_of_voucher($result->voucher_id, 1, $result->price, $result->created, $result->expired);
 			$row_export->type = OnecardHelper::get_type_name($result->type);
 			$row_export->ncc = ($result->unit == 2 ? "OneCard" : "NCC");
 			$row_export->created = date("d-m-Y", strtotime($result->created));
