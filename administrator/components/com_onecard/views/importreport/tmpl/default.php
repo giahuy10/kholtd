@@ -91,7 +91,7 @@ $query = $db->getQuery(true);
 		$query->where($db->quoteName('c.unit') . ' = '.$unit);
 	
 		$query->where($db->quoteName('a.state') . ' = 1');
-		$query->where($db->quoteName('a.virtual_code') . ' != 1');
+		//$query->where($db->quoteName('a.virtual_code') . ' != 1');
 	$group = array('a.voucher','a.input_price', 'a.expired', 'a.created');
 	
 	$query->group($group);

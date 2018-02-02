@@ -25,7 +25,7 @@ if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 	$k = 0;
 	while ($k < $number_code) {
 
-		$code = "O".$event_code.mt_rand(100000, 999999);
+		$code = "I".$event_code.mt_rand(100000, 999999);
 		$check = OnecardHelper::check_code($code);
 		if (!$check) {
 			$k++;
