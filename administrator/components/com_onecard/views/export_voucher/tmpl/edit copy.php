@@ -53,7 +53,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
         
         <div class="row-fluid">
             <div class="span10 form-horizontal">
-			<?php if ($this->item->id && !$this->item->is_excel) {?>
+			<?php if ($this->item->id) {?>
 				<?php 
 					$db = JFactory::getDbo();
 
@@ -133,67 +133,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 				<a href="<?php echo JURI::root()?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id?>&task=export"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download Codes</a>
 				
 					
-			<?php } else {?>
-
-				<!-- CODE DANH CHO KHACH HANG TPBANK -->
-				<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th>STT</th>
-								<th>Tên khách hàng</th>
-								<th>Số CIF tại TPB</th>
-								<th>Loại quà</th>
-								<th>Số lượng quà đăng ký</th>
-								
-								<th>Mã đối tác</th>
-								<th>Địa chỉ nhận quà</th>
-								<th>SĐT khách hàng</th>
-								
-								
-							
-
-							</tr>
-						</thead>
-					<?php 
-				$db = JFactory::getDbo();
-
-// Create a new query object.
-				$query = $db->getQuery(true);
-
-// Select all records from the user profile table where key begins with "custom.".
-// Order it by the ordering field.
-				$query->select('*');
-				$query->from($db->quoteName('#__onecard_excel'));
-				$query->where($db->quoteName('export_id') . ' = ' . $this->item->id);
-				$query->order('number ASC');
-
-// Reset the query using our newly populated query object.
-				$db->setQuery($query);
-
-// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-				$exel_request = $db->loadObjectList();
-					?>
-					<?php foreach ($exel_request as $code) { ?>
-						<tr>
-							<td><?php echo $code->number ?></td>
-							<td><?php echo $code->name ?></td>
-							<td><?php echo $code->cif ?></td>
-							<td><?php echo $code->gift ?></td>
-							<td><?php echo $code->quantity ?></td>
-							
-							<td><?php echo $code->code ?></td>
-							<td><?php echo $code->address ?></td>
-							<td><?php echo $code->phone ?></td>
-						
-						</tr>
-						
-				
-					
-				
-				
-				<?php }?>
-					</table>
-				<?php }?>
+			<?php }?>
                 <fieldset class="adminform">
 				
 				<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
@@ -290,11 +230,10 @@ echo $this->form->renderField('list_templates'); ?>
 			   
 			   if($imageFileType == "xlsx") {
 
-				   doExport($target_file,  $this->item->id);
-				   echo "ok";
+				   doExport($target_file, $voucher_id, $expired, $this->item->id);
+				   
 			   }else {
 				   //doImportxls($target_file);
-				   echo "Khong ho tro dinh dang xls";
 			   }
 				
 						
@@ -311,42 +250,8 @@ echo $this->form->renderField('list_templates'); ?>
 			}
 		}
 	}
-	function doExport ($fileExcel, $export_id){
-		require_once (JPATH_COMPONENT . '/libs/simplexlsx.class.php');
-		$xlsx = new SimpleXLSX($fileExcel);
-		$rows = $xlsx->rows(2);
-		$remove_row = 0;
-		foreach ($rows as $inser_row) {
-			if ($remove_row > 4 && $inser_row[0] !="") {
-				$profile = new stdClass();
-				$profile->export_id = $export_id;
-				$profile->number = $inser_row[0];
-				$profile->name = $inser_row[1];
-				$profile->cif = $inser_row[2];
-				$profile->gift = $inser_row[3];
-				$profile->quantity = $inser_row[4];
-				$profile->date_register = date("Y-m-d",strtotime($inser_row[5]));
-				$profile->code = $inser_row[6];
-				$profile->address = $inser_row[7];
-				$profile->phone = $inser_row[8];
-				$profile->note = $inser_row[9];
-				$profile->note_trangctt = $inser_row[10];
-				$profile->voucher = $inser_row[11];
-				
-				
-				$result = JFactory::getDbo()->insertObject('#__onecard_excel', $profile);
-			}
-			$remove_row ++;
 		
-			$object = new stdClass();
-			$object->id = $export_id;
-			$object->is_excel = 1;
-			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
-			
-		}
-	header("Location: index.php?option=com_onecard&view=export_voucher&layout=edit&id=". $export_id);
-	}	
-	function doExport_old($fileExcel, $voucher_id, $expired, $export_id){
+	function doExport($fileExcel, $voucher_id, $expired, $export_id){
   		
   		
 		//$inventory_code_uploaded = JFactory::getDbo()->insertObject('#__inventory_code_uploaded', $inventory_code_uploaded);
@@ -615,4 +520,20 @@ echo $this->form->renderField('list_templates'); ?>
 }	
 	
 	?>
-	
+	<script>
+			jQuery(document).ready(function($) {
+				$('#export_code_btn').on('click', function(e){
+										e.preventDefault();
+										ResultsToTable();
+									});
+									
+									function ResultsToTable(){    
+										$("#export_code_z").table2excel({
+											exclude: ".noExl",
+											name: "Results",
+											filename: "Code_Exported_<?php echo $this->item->event?>"
+										});
+									}
+				
+			});
+		</script>
