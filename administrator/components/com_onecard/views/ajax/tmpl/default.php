@@ -50,6 +50,47 @@ if ($type == "create_code") { // TẠO CODE TỰ ĐỘNG
 	echo $k.' code được tạo';
 	
 }
+if ($type == "create_custom_code") { // TẠO CODE TỰ ĐỘNG
+	$number_code = JRequest::getVar('number_code');
+	$event_code_after = JRequest::getVar('event_code_after');
+	$event_code = JRequest::getVar('event_code');
+	$virtual_code = JRequest::getVar('virtual_code');
+
+
+	$k = 0;
+	$start = "1";
+	$end = "9";
+	for ($i = 1; $i < $event_code_after; $i++ ){
+		$start .= "0";
+		$end .="9";
+	}
+	while ($k < $number_code) {
+		
+		$code = $event_code . mt_rand((int)$start, (int)$end);
+		$check = OnecardHelper::check_code($code);
+		if (!$check) {
+			$k++;
+			$product[$k] = new stdClass();
+
+			$product[$k]->state = 1;
+			$product[$k]->code = $code;
+			$product[$k]->created = date("Y-m-d");
+			$product[$k]->input_price = $input_price;
+			$product[$k]->expired = $expired;
+			$product[$k]->voucher = $voucher_id;
+			$product[$k]->status = 1;
+			$product[$k]->type = 2;
+			$product[$k]->virtual_code = $virtual_code;
+			$product[$k]->created_by = $user->id;
+					//	echo "<pre>";
+						//	var_dump ($product[$k]);
+					//	echo "</pre>";
+			OnecardHelper::import_product($product[$k], 'onecard_code');
+		}
+	}
+	echo $k . ' code được tạo ok '. $number_code." ". $start;
+
+}
 if ($type == "upload_code") { // UPLOAD CODE TỪ FILE EXCEL
 		$type_upload = JRequest::getVar('type_upload');
 		$target_dir = JPATH_ROOT.'/images/import/';

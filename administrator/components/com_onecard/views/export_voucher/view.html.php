@@ -74,7 +74,9 @@ class OnecardViewExport_voucher extends JViewLegacy
         }
 		if (!$isNew) {
 			$export_2 = $layout->render(array('name' => 'export2','doTask' => '', 'text' => JText::_('Xuất code cho khách (excel)'), 'class' => 'icon-download'));
-			$toolbar->appendButton('Custom', $export_2);
+            $toolbar->appendButton('Custom', $export_2);
+            $delete = $layout->render(array('name' => 'delete', 'doTask' => '', 'text' => JText::_('Hoàn code'), 'class' => 'icon-remove'));
+            $toolbar->appendButton('Custom', $delete);
 		}
         $canDo = OnecardHelpersOnecard::getActions();
 

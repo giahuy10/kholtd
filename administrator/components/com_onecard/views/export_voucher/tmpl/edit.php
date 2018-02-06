@@ -18,6 +18,8 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
+
+$task = JRequest::getVar('task');
 ?>
 
 <script type="text/javascript">
@@ -42,7 +44,138 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
         }
     }
 </script>
+<?php 
+if ($task == "refund") {
+	$db = JFactory::getDbo();
 
+	$query = $db->getQuery(true);
+
+	// Fields to update.
+	$fields = array(
+		$db->quoteName('status') . ' = 1',
+		$db->quoteName('exported_id') . ' = 0',
+		$db->quoteName('export_price') . ' = 0',
+		$db->quoteName('exported_detail_id') . ' = 0'
+	);
+
+	// Conditions for which records should be updated.
+	$conditions = array(
+		$db->quoteName('exported_id') . ' = ' . $this->item->id,
+		$db->quoteName('status') . ' = ' . 2
+	);
+
+	$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
+
+	$db->setQuery($query);
+
+	$result = $db->execute();
+
+	$object = new stdClass();
+	$decode_store_data = json_decode($this->item->store_data);
+	foreach ($decode_store_data as $key => $item) {
+		$decode_store_data[$key]->code = "";
+	}
+	
+	$object->id = $this->item->id;
+	$object->store_data = json_encode($decode_store_data);
+		//$object->store_data = 43;
+	$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+}
+?>
+<?php 
+	$exel_request = json_decode($this->item->store_data);
+	// Lấy code cho file excel
+	if ($task == "get_code") {
+		$active_code = array();
+		$not_enough = array();
+		$post_code = array();
+		foreach ($exel_request as $key=> $item) {
+			$date = date("Y-m-d"); // current date
+			$exchange_date = " +35 day";
+			$date2 = strtotime(date("Y-m-d", strtotime($date)) . $exchange_date);
+			$date2 = date("Y-m-d", $date2);
+			$codes = OnecardHelper::export_codes_by_voucher($item->voucher, $date2, $item->quantity, $active_code);
+			if ($codes && count($codes) >= $item->quantity) {
+				$codes_text = array();
+				foreach ($codes as $code) {
+					if ($code->serial)
+						$codes_text[] = 'Voucher(' . $code->code . ')/PIN(' . $code->serial . ')';
+					else
+						$codes_text[] = $code->code;
+					$active_code[] = $code->id;
+					if ($code->eventoc_export) {
+						$post_code[] = array(
+							'coupon' => $code->code,
+
+							'event_id' => $code->eventoc_export,
+							'status' => 1,
+							'created' => strtotime(date('Y-m-d 23:59:59')),
+							'merchant_id' => $code->merchantoc,
+							'end_time' => strtotime($date2 . " 16:59:59"),
+							'price' => $code->value,
+							'item_id' => $this->item->id,
+							'cart_detail_id' => 82,
+							'customer_id' => 1
+						);	
+					}
+					
+
+				}
+				$exel_request[$key]->code = implode(",", $codes_text);
+			}else {
+				$not_enough[] = array("voucher"=> $item->voucher."-".$item->gift, "expired"=>$date2, "quantity"=> $item->quantity, "number" => $item->number, "name" => $item->name, "available"=>count($codes));
+			}
+			
+
+		}
+	if ($not_enough) {
+		echo "<h3>Code không đủ số lượng</h3>";
+		echo "<table class='table table-bordered'>";
+		echo "
+			<tr>
+				<th>STT</th>
+				<th>Tên khách</th>
+				<th>Voucher</th>
+				<th>Hạn sử dụng</th>
+				<th>Số lượng yêu cầu</th>
+				<th>Số lượng còn trong kho</th>
+			</tr>
+		";
+		foreach ($not_enough as $item) {
+			echo "<tr>";
+			echo "<td>" . $item['number'] . "</td><td>" . $item['name'] . "</td><td>".$item['voucher']. "</td><td> ". $item['expired']. "</td><td> ". $item['quantity']. "</td><td> " . $item['available'] . "</td>";
+			echo "</tr>";
+		}
+		echo "</table>";
+	}	else {
+		echo "<h3>Lấy code thành công</h3>";
+			$object = new stdClass();
+			$object->id = $this->item->id;	
+			$object->store_data = json_encode($exel_request);
+			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+
+			// UPDATE code status
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$fields = array(
+				$db->quoteName('status') . ' = 1' ,
+				$db->quoteName('exported_id') . ' = '.$this->item->id
+			);
+			$conditions = array(
+				$db->quoteName('status') . ' = 1',
+				$db->quoteName('id') . ' in (' . implode(",", $active_code). ')'
+			);
+			$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
+			$db->setQuery($query);
+			$result = $db->execute();
+			//echo "<pre>";	
+			//var_dump($post_code);
+			//echo "</pre>";
+			// Upload code lên OneCard
+		}
+	}
+
+?>
 <form
     action="<?php echo JRoute::_('index.php?option=com_onecard&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" enctype="multipart/form-data" name="adminForm" id="export_voucher-form" class="form-validate">
@@ -122,7 +255,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 					//var_dump($excel_data);
 					?>
 					</table>
-					<?php $task = JRequest::getVar('task');
+					<?php 
 					if ($task == "export") {
 						
 						OnecardHelper::export_excel($excel_data,$this->item->id."_".$this->item->event);
@@ -155,23 +288,13 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 							</tr>
 						</thead>
 					<?php 
-				$db = JFactory::getDbo();
-
-// Create a new query object.
-				$query = $db->getQuery(true);
-
-// Select all records from the user profile table where key begins with "custom.".
-// Order it by the ordering field.
-				$query->select('*');
-				$query->from($db->quoteName('#__onecard_excel'));
-				$query->where($db->quoteName('export_id') . ' = ' . $this->item->id);
-				$query->order('number ASC');
-
-// Reset the query using our newly populated query object.
-				$db->setQuery($query);
-
-// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-				$exel_request = $db->loadObjectList();
+				
+				
+				
+				//echo "<pre>";
+				//var_dump($exel_request);
+				//echo "</pre>";
+				//echo $this->item->store_data;
 					?>
 					<?php foreach ($exel_request as $code) { ?>
 						<tr>
@@ -193,6 +316,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 				
 				<?php }?>
 					</table>
+					<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=get_code"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Check codes</a>
 				<?php }?>
                 <fieldset class="adminform">
 				
@@ -226,6 +350,26 @@ echo $this->form->renderField('list_templates'); ?>
 
     </div>
 </form>
+<!-- Xoá code -->	
+<div class="modal hide fade" id="modal-delete">
+	  <div class="modal-header">
+		<button type="button" role="presentation" class="close" data-dismiss="modal">x</button>
+		<h3>Hoàn code đã xuất</h3>
+	  </div>
+	  <div class="modal-body">
+		<div class="container">
+			<h3>
+			 <a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=refund"  class="btn btn-info"><span class="icon-remove" aria-hidden="true"></span> Hoàn lại các code đã xuất</a>
+			 </h3>
+		</div>
+	  </div>
+	  <div class="modal-footer">
+		<button class="btn" type="button" data-dismiss="modal">
+		  <?php echo JText::_('JCANCEL'); ?>
+		</button>
+	  </div>
+	</div> 
+	
 <!-- XUẤT VOUCHER CHO KHÁCH HÀNG-->	
 <div class="modal hide fade" id="modal-export2">
 	  <div class="modal-header">
@@ -316,8 +460,18 @@ echo $this->form->renderField('list_templates'); ?>
 		$xlsx = new SimpleXLSX($fileExcel);
 		$rows = $xlsx->rows(2);
 		$remove_row = 0;
+		$store_data = array();
+		$values = array();
+		$values_detail = array();
+		$data_json_array = array();
+	$date = date("Y-m-d"); // current date
+	$exchange_date = " +" . $voucher->expired . " day";
+	$date2 = strtotime(date("Y-m-d", strtotime($date)) . $exchange_date);
+	$date2 = date("Y-m-d", $date2);
 		foreach ($rows as $inser_row) {
+
 			if ($remove_row > 4 && $inser_row[0] !="") {
+				
 				$profile = new stdClass();
 				$profile->export_id = $export_id;
 				$profile->number = $inser_row[0];
@@ -325,26 +479,53 @@ echo $this->form->renderField('list_templates'); ?>
 				$profile->cif = $inser_row[2];
 				$profile->gift = $inser_row[3];
 				$profile->quantity = $inser_row[4];
-				$profile->date_register = date("Y-m-d",strtotime($inser_row[5]));
+			//	$profile->date_register = date("Y-m-d",strtotime($inser_row[5]));
+			$profile->date_register = $inser_row[5];
 				$profile->code = $inser_row[6];
 				$profile->address = $inser_row[7];
 				$profile->phone = $inser_row[8];
 				$profile->note = $inser_row[9];
 				$profile->note_trangctt = $inser_row[10];
 				$profile->voucher = $inser_row[11];
-				
-				
-				$result = JFactory::getDbo()->insertObject('#__onecard_excel', $profile);
+				$profile->price = $inser_row[12];
+				$store_data[] = $profile;
+				//$result = JFactory::getDbo()->insertObject('#__onecard_excel', $profile);
+				$json_id = $remove_row - 5;
+				$data_json_array[]= '"list_templates' . $json_id . '":{"voucher":"' . $inser_row[11] . '","number":"' . $inser_row[4] . '","price":"' . $inser_row[12] . '","expired":"35"}';
+				$values[] = "('". $profile->export_id . "','" . $profile->number . "','" . $profile->name . "','" . $profile->cif . "','" . $profile->gift . "','" . $profile->quantity . "','" . $profile->date_register . "','" . $profile->code . "','" . $profile->address . "','" . $profile->phone . "','" . $profile->note . "','" . $profile->note_trangctt . "','" . $profile->voucher . "','" . $profile->price . "')";
+				$values_detail[]= "('" . $profile->voucher . "','" . $profile->quantity . "','" . $profile->price . "','" . $profile->export_id . "','" . $date2 . "')";
 			}
 			$remove_row ++;
 		
-			$object = new stdClass();
-			$object->id = $export_id;
-			$object->is_excel = 1;
-			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
 			
 		}
-	header("Location: index.php?option=com_onecard&view=export_voucher&layout=edit&id=". $export_id);
+		$values_insert = implode(",",$values);
+	$values_detail_insert = implode(",", $values_detail);
+		$db = JFactory::getDbo();
+		$query = "
+			INSERT INTO #__onecard_excel (export_id, number,name,cif,gift,quantity,date_register,code,address,phone,note,note_trangctt,voucher,price)
+			VALUES 
+			
+			". $values_insert;
+			$db->setQuery($query);
+			$db->query();
+	$query2 = "
+			INSERT INTO #__onecard_export_voucher_detail (voucher, number,price,exported_id, expired)
+			VALUES 
+			
+			" . $values_detail_insert;
+	$db->setQuery($query2);
+	$db->query();	
+		//var_dump($data_json_array);
+		$data_json = implode(",", $data_json_array);
+		$object = new stdClass();
+		$object->is_excel = 1;
+		$object->id = $export_id;
+		//$object->list_templates = '{' . $data_json . '}';
+		$object->store_data = json_encode($store_data);
+		//$object->store_data = 43;
+		$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+		//header("Location: index.php?option=com_onecard&view=export_voucher&layout=edit&id=". $export_id);
 	}	
 	function doExport_old($fileExcel, $voucher_id, $expired, $export_id){
   		

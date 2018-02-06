@@ -69,8 +69,10 @@ class OnecardViewVoucher extends JViewLegacy
         $generate = $layout->render(array('name' => 'generate','doTask' => '', 'text' => JText::_('Tạo code'), 'class' => 'icon-plus'));
         $renew = $layout->render(array('name' => 'renew','doTask' => '', 'text' => JText::_('Gia hạn'), 'class' => 'icon-clock'));
         $buy = $layout->render(array('name' => 'buy', 'doTask' => '', 'text' => JText::_('Mua code VTC'), 'class' => 'icon-cart'));
+        $generate_custom = $layout->render(array('name' => 'customcode', 'doTask' => '', 'text' => JText::_('Tạo code tuỳ chỉnh'), 'class' => 'icon-plus'));
 		$toolbar->appendButton('Custom', $dhtml);
         $toolbar->appendButton('Custom', $generate);
+            $toolbar->appendButton('Custom', $generate_custom);
         $toolbar->appendButton('Custom', $renew);
         $toolbar->appendButton('Custom', $buy);
 		}

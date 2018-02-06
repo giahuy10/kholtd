@@ -223,6 +223,49 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 		</button>
 	  </div>
 	</div>
+	<!-- TẠO VOUCHER tuỳ chỉnh -->	
+	<div class="modal hide fade" id="modal-customcode">
+	  <div class="modal-header">
+		<button type="button" role="presentation" class="close" data-dismiss="modal">x</button>
+		<h3>Tạo code tự động</h3>
+	  </div>
+	  <div class="modal-body">
+		<div class="container">
+			
+				<div class="row-fluid">
+					<div class="span12">
+						
+						<p>Số lượng code</p>
+						<input type="number" name="number_custom" id="number_custom" class="inputbox" />
+						
+						<p>Kí tự bắt đầu</p>
+						<input type="text" name="event_code_custom" id="event_code_custom" class="inputbox" />
+						<p>Số kí tự ngẫu nhiên phía sau</p>
+						<input type="number" name="event_code_after" id="event_code_after" class="inputbox" />
+						<p>Code ảo <input type="checkbox" name="virtual_code_custom" id="virtual_code_custom" value="1" /></p>
+						<br/>
+						
+						Giá nhập cho lần này: <?php echo number_format($this->item->input_price); ?><br/>
+						Hạn sử dụng cho lần này: <?php echo date("d-m-Y", strtotime($this->item->expired)); ?> <br/>
+						
+						<span style="color:red; font-weight:bold">* Lưu giá nhập trước khi tạo CODE</span><br/>
+						<button class="btn" id="create_custom_code">Tạo code</button>	
+						
+					</div>
+				</div>
+					
+					
+				
+					
+				
+		</div>
+	  </div>
+	  <div class="modal-footer">
+		<button class="btn" type="button" data-dismiss="modal">
+		  <?php echo JText::_('JCANCEL'); ?>
+		</button>
+	  </div>
+	</div>
 <!-- GIA HAN VOUCHER-->
 <div class="modal hide fade" id="modal-renew">
 	  <div class="modal-header">
@@ -334,6 +377,28 @@ jQuery( document ).ready(function( $ ) {
 		});
 	});
 
+// CUSTOME CODE
+$('#create_custom_code').click(function(){
+	var virtual_code = 0;  
+	if ($('#virtual_code').is(":checked"))
+		{
+		virtual_code = 1;
+		}	
+			
+	var event_code_after = $('#event_code_after').val();
+	var number_code = $('#number_custom').val();
+	var event_code = $('#event_code_custom').val();
+		$.ajax
+		({ 
+			url: 'index.php?option=com_onecard&view=ajax&format=raw&type=create_custom_code&voucher_id=<?php echo $this->item->id ?>&expired=<?php echo date("Y-m-d", strtotime($this->item->expired)) ?>&input_price=<?php echo $this->item->input_price; ?>',
+			data: {"number_code": number_code, "event_code":event_code, "virtual_code":virtual_code,"event_code_after":event_code_after},
+			type: 'post',
+			success: function(result)
+			{
+			   alert (result);
+			}
+		});
+	});
 	// Renew CODE
 	$('#renew_code').click(function(){
 

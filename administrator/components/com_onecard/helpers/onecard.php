@@ -760,7 +760,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 		Onecardhelper::log_sql("export_codes",$query->__toString());
 		return ($exported);
 	}
-	public static function export_codes_by_voucher ($voucher, $expired, $number){
+	public static function export_codes_by_voucher ($voucher, $expired, $number, $actived_code ){
 		$voucher_detail = OnecardHelper::get_voucher_detail($voucher);
 		$voucher_type = $voucher_detail->type;
 		$db = JFactory::getDbo();
@@ -772,24 +772,30 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 		// Order it by the created date.
 		// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 		$query
-			->select($db->quoteName('a.code'))
+			->select(array('a.code', 'a.barcode', 'a.id', 'a.serial', 'eventoc_export', 'merchantoc','b.value'))
 			->from($db->quoteName('#__onecard_code', 'a'))
 			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
-			
+			->join('INNER', $db->quoteName('#__onecard_brand', 'br') . ' ON (' . $db->quoteName('b.brand') . ' = ' . $db->quoteName('br.id') . ')')
+			//->join('LEFT', $db->quoteName('#__onecard_voucher_event', 'e') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('e.voucher') . ')')
 			->where($db->quoteName('a.voucher') . ' = '.$voucher);
 			if ($voucher_type != 3) {
 				$query->where($db->quoteName('a.expired') . ' >= '.$db->quote($expired));
 			}
-			
-		$query->where($db->quoteName('a.status') . ' = 1')
+			if (is_array($actived_code) && $actived_code){
+			$actived_code = implode(",", $actived_code);
+				$query->where($db->quoteName('a.id') . ' not in ('. $actived_code .')');
+			}
+			$query->where($db->quoteName('a.status') . ' = 1');
+		$query->where($db->quoteName('a.state') . ' = 1')
+
 			->order($db->quoteName('a.expired') . ' ASC');
 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query,0,$number);
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-		$exported = $db->loadColumn();	
-		Onecardhelper::log_sql("export_codes_by_voucher",$query->__toString());
+		$exported = $db->loadObjectList();	
+		//Onecardhelper::log_sql("export_codes_by_voucher",$query->__toString());
 		return ($exported);
 
 	}
@@ -944,7 +950,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 				$details = $db->loadObjectList();
 				$post_code = array();
 				foreach ($details as $detail) {
-					$exported_code = OnecardHelper::export_codes_by_voucher($detail->voucher, $detail->expired, $detail->number);
+					$exported_code = OnecardHelper::export_codes_by_voucher($detail->voucher, $detail->expired, $detail->number, NULL);
 					if ($detail->number > count($exported_code)) {
 							echo $detail->id."NO<br/>";
 					}else { // OK
@@ -952,8 +958,8 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 							foreach ($exported_code as $item) {
 								$voucher_detail = self::get_voucher_detail($detail->voucher);
 								$post_code[] = array(
-									'coupon' => $item,
-									'pincode' => $code->serial,
+									'coupon' => $item->code,
+									'pincode' => $item->serial,
 									'event_id' => self::get_event_oc_id($detail->voucher),
 									'status' => 1,
 									'created' => strtotime(date('Y-m-d 23:59:59')),
