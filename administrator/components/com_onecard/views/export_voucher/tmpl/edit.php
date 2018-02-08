@@ -80,6 +80,23 @@ if ($task == "refund") {
 	$object->store_data = json_encode($decode_store_data);
 		//$object->store_data = 43;
 	$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+	// XOá chi tiết
+	$db = JFactory::getDbo();
+
+	$query = $db->getQuery(true);
+
+// delete all custom keys for user 1001.
+	$conditions = array(
+		
+		$db->quoteName('exported_id') . ' = ' . $this->item->id
+	);
+
+	$query->delete($db->quoteName('#__onecard_export_voucher_detail'));
+	$query->where($conditions);
+
+	$db->setQuery($query);
+
+	$result = $db->execute();
 }
 ?>
 <?php 
@@ -102,6 +119,13 @@ if ($task == "refund") {
 						$codes_text[] = 'Voucher(' . $code->code . ')/PIN(' . $code->serial . ')';
 					else
 						$codes_text[] = $code->code;
+
+					if ($code->type == 2){
+						$no_code = 1;
+					}
+					if ($code->type == 3) {
+						$no_code = 1;
+					}	
 					$active_code[] = $code->id;
 					if ($code->eventoc_export) {
 						$post_code[] = array(
@@ -121,7 +145,13 @@ if ($task == "refund") {
 					
 
 				}
+				
 				$exel_request[$key]->code = implode(",", $codes_text);
+					
+					
+				
+				
+				$exel_request[$key]->expired = $date2;
 			}else {
 				$not_enough[] = array("voucher"=> $item->voucher."-".$item->gift, "expired"=>$date2, "quantity"=> $item->quantity, "number" => $item->number, "name" => $item->name, "available"=>count($codes));
 			}
@@ -149,16 +179,37 @@ if ($task == "refund") {
 		echo "</table>";
 	}	else {
 		echo "<h3>Lấy code thành công</h3>";
-			$object = new stdClass();
+
+		echo "<table class='table table-bordered'>";
+		echo "
+			<tr>
+				<th>STT</th>
+				<th>Tên khách</th>
+				<th>Voucher</th>
+				<th>Hạn sử dụng</th>
+				<th>Số lượng yêu cầu</th>
+				<th>Số lượng còn trong kho</th>
+			</tr>
+		";
+		foreach ($exel_request as $item) {
+			$item = (array)$item;
+			echo "<tr>";
+			echo "<td>" . $item['number'] . "</td><td>" . $item['name'] . "</td><td>" . $item['voucher'] . "</td><td> " . $item['expired'] . "</td><td> " . $item['quantity'] . "</td><td> " . $item['code'] . "</td>";
+			echo "</tr>";
+		}
+		echo "</table>";
+			/*$object = new stdClass();
+			
 			$object->id = $this->item->id;	
 			$object->store_data = json_encode($exel_request);
 			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
+			*/
 
-			// UPDATE code status
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$fields = array(
-				$db->quoteName('status') . ' = 1' ,
+				$db->quoteName('status') . ' = 2' ,
 				$db->quoteName('exported_id') . ' = '.$this->item->id
 			);
 			$conditions = array(
@@ -170,8 +221,10 @@ if ($task == "refund") {
 			$result = $db->execute();
 			//echo "<pre>";	
 			//var_dump($post_code);
-			//echo "</pre>";
+			//echo "</pre>";*/
 			// Upload code lên OneCard
+		$result_post = OnecardHelper::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+		Onecardhelper::log_sql("post_url", $result_post);
 		}
 	}
 
@@ -295,6 +348,24 @@ if ($task == "refund") {
 				//var_dump($exel_request);
 				//echo "</pre>";
 				//echo $this->item->store_data;
+				$excel_data_tp = array();
+				$array_title = new stdClass();
+				$array_title->number = "STT";
+				$array_title->name = "Tên khách hàng";
+				$array_title->cif = "Số CIF tại TPB";
+				$array_title->gift = "Loại quà";
+				$array_title->quantity = "Số lượng quà đăng ký";
+				$array_title->date_register = "Ngày đăng ký";
+				$array_title->code = "Mã đối tác";
+				$array_title->address = "Địa chỉ nhận quà";
+				$array_title->phone = "SĐT khách hàng";
+				$array_title->note = "Ghi chú";
+				$array_title->note_trangctt = "Note Trangctt";
+				//$array_title->expired = "Hạn sử dụng";
+				
+					//$array_title = array("Tên Voucher","Giá trị","Code","Barcode","Serial/PIN","Hạn sử dụng");
+				$excel_data_tp[0] = $array_title;
+				$index = 1;
 					?>
 					<?php foreach ($exel_request as $code) { ?>
 						<tr>
@@ -311,12 +382,35 @@ if ($task == "refund") {
 						</tr>
 						
 				
-					
+					<?php 
+						$array_value = new stdClass();
+						$array_value->number = $code->number;
+						$array_value->name = $code->name;
+						$array_value->cif = $code->cif;
+						$array_value->gift = $code->gift;
+						$array_value->quantity = $code->quantity;
+						$array_value->date_register = $code->date_register;
+						$array_value->code = $code->code;
+						$array_value->address = $code->address;
+						$array_value->phone = $code->phone;
+						$array_value->note = $code->note;
+						$array_value->note_trangctt = $code->note_trangctt;
+						//$array_value->expired = $code->expired;
+						$excel_data_tp[$index] = $array_value;
+						$index++;
+					?>
 				
 				
 				<?php }?>
 					</table>
-					<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=get_code"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Check codes</a>
+					<?php 
+						if ($task == "export_tp") {
+
+							OnecardHelper::export_excel($excel_data_tp, $this->item->id . "_" . $this->item->event);
+						}
+					?>
+					<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=export_tp"  class="btn btn-info"><span class="icon-download" aria-hidden="true"></span> Download excel</a>
+					<a href="<?php echo JURI::root() ?>administrator/index.php?option=com_onecard&view=export_voucher&layout=edit&id=<?php echo $this->item->id ?>&task=get_code"  class="btn btn-info"><span class="icon-check-circle" aria-hidden="true"></span> Lấy codes</a>
 				<?php }?>
                 <fieldset class="adminform">
 				

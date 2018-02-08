@@ -772,7 +772,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 		// Order it by the created date.
 		// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
 		$query
-			->select(array('a.code', 'a.barcode', 'a.id', 'a.serial', 'eventoc_export', 'merchantoc','b.value'))
+			->select(array('a.code', 'a.barcode', 'a.id', 'a.serial', 'eventoc_export', 'merchantoc','b.value','b.type'))
 			->from($db->quoteName('#__onecard_code', 'a'))
 			->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
 			->join('INNER', $db->quoteName('#__onecard_brand', 'br') . ' ON (' . $db->quoteName('b.brand') . ' = ' . $db->quoteName('br.id') . ')')

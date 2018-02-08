@@ -136,7 +136,8 @@ class OnecardTableExport_voucher extends JTable
 			$voucher_not_enough = "";
 			$this->list_templates = json_encode($this->list_templates);
 			$vouchers = json_decode($this->list_templates);
-			$code = array();
+            $code = array();
+            $active_code = array();
 			foreach ($vouchers as $voucher) {
                 $is_exported = OnecardHelper::get_export_detail($voucher->voucher,$this->id);
                 if (!$is_exported) {
@@ -145,7 +146,7 @@ class OnecardTableExport_voucher extends JTable
                     $date2 = strtotime(date("Y-m-d", strtotime($date)) .$exchange_date);
                     $date2 =  date("Y-m-d",$date2);
                     
-                    $exported = OnecardHelper::export_codes_by_voucher($voucher->voucher, $date2, $voucher->number);
+                    $exported = OnecardHelper::export_codes_by_voucher($voucher->voucher, $date2, $voucher->number, NULL);
                     
                     if (count($exported) < $voucher->number) {
                         $not_enough = 1;
