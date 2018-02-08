@@ -955,6 +955,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 							echo $detail->id."NO<br/>";
 					}else { // OK
 							// Change status
+							$need_change_status = array();
 							foreach ($exported_code as $item) {
 								$voucher_detail = self::get_voucher_detail($detail->voucher);
 								$post_code[] = array(
@@ -970,15 +971,16 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 									'cart_detail_id' => 82,
 									'customer_id' => 1
 								);
+					$need_change_status[] = $item->id;
 								//$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
 							//	Onecardhelper::log_sql("post_url". $item, json_encode($post_code));
 							}
 							if (!$detail->price) {
 								$detail->price = $voucher_detail->value;
 							}
-							$code = implode(",",$exported_code);
-							$update_code = str_replace(',','","', $code);
-							$update_code = '"'. $update_code.'"';
+							$update_code = implode(",", $need_change_status);
+							//$update_code = str_replace(',','","', $code);
+							//$update_code = '"'. $update_code.'"';
 							$db = JFactory::getDbo();			
 							$query = $db->getQuery(true);
 							$fields = array(
@@ -989,7 +991,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 								$db->quoteName('export_price') . ' = ' . $detail->price
 							);
 							$conditions = array(
-								$db->quoteName('code') . ' IN ' . ' (' . $update_code .')'
+								$db->quoteName('id') . ' IN ' . ' (' . $update_code .')'
 							);
 							$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
 						//	Onecardhelper::log_sql("change_code_status", $query->__toString());
