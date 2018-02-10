@@ -1,5 +1,4 @@
 <?php
-ini_set('memory_limit', '256M');
 class JConfig {
 	public $MetaAuthor = '1';
 	public $MetaDesc = 'My Joomla CMS';
@@ -21,7 +20,7 @@ class JConfig {
 	public $debug_lang = '0';
 	public $display_offline_message = '1';
 	public $editor = 'tinymce';
-	public $error_reporting = 'maximum';
+	public $error_reporting = 'none';
 	public $feed_email = 'none';
 	public $feed_limit = '10';
 	public $force_ssl = '0';
