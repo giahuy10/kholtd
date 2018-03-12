@@ -64,7 +64,7 @@ $query = $db->getQuery(true);
 // Select all articles for users who have a username which starts with 'a'.
 // Order it by the created date.
 // Note by putting 'a' as a second parameter will generate `#__content` AS `a`
-  
+/*  
 	$query
     ->select(array('a.voucher as voucher_id','c.title as voucher_name','d.title as brand', 'a.number as quantity', 'a.price as price', 'b.event', 'c.type', 'a.expired', 'f.title as partner', 'e.title as event','c.unit as unit' ,'b.created as exported_date','f.id as partner_id' ))
     ->from($db->quoteName('#__onecard_export_voucher_detail', 'a'))
@@ -103,6 +103,50 @@ $query = $db->getQuery(true);
 	
 	//$query->group($report_base);
 	$query->order($db->quoteName('a.exported_id') . ' DESC');
+*/
+
+$query
+	->select(array('a.voucher as voucher_id', 'c.title as voucher_name', 'd.title as brand', 'COUNT(*) as quantity', 'a.export_price as price', 'b.event', 'c.type',  'f.title as partner', 'e.title as event', 'c.unit as unit', 'b.created as exported_date', 'f.id as partner_id'))
+	->from($db->quoteName('#__onecard_code', 'a'))
+	->join('INNER', $db->quoteName('#__onecard_export_voucher', 'b') . ' ON (' . $db->quoteName('a.exported_id') . ' = ' . $db->quoteName('b.id') . ')')
+	->join('INNER', $db->quoteName('#__onecard_voucher', 'c') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('c.id') . ')')
+	->join('INNER', $db->quoteName('#__onecard_brand', 'd') . ' ON (' . $db->quoteName('c.brand') . ' = ' . $db->quoteName('d.id') . ')')
+	->join('INNER', $db->quoteName('#__onecard_event', 'e') . ' ON (' . $db->quoteName('b.event') . ' = ' . $db->quoteName('e.id') . ')')
+	->join('INNER', $db->quoteName('#__onecard_partner', 'f') . ' ON (' . $db->quoteName('e.partner') . ' = ' . $db->quoteName('f.id') . ')');
+if ($date_from)
+	$query->where('DATE(' . $db->quoteName('b.created') . ') >= ' . $db->quote($date_from));
+if ($date_to)
+	$query->where('DATE(' . $db->quoteName('b.created') . ') <= ' . $db->quote($date_to));
+if ($onecard_partner)
+	$query->where($db->quoteName('f.id') . ' IN ( ' . $onecard_partner . ')');
+if ($onecard_event)
+	$query->where($db->quoteName('e.id') . ' IN ( ' . $onecard_event . ')');
+
+
+if ($onecard_voucher)
+	$query->where($db->quoteName('c.id') . ' IN ( ' . $onecard_voucher . ')');
+if ($onecard_brand)
+	$query->where($db->quoteName('d.id') . ' IN ( ' . $onecard_brand . ')');
+if ($type)
+	$query->where($db->quoteName('c.type') . ' = ' . $type);
+if ($unit)
+	$query->where($db->quoteName('c.unit') . ' = ' . $unit);
+if ($is_onecard == 2)
+	$query->where($db->quoteName('a.is_onecard') . ' = 1');
+	//$query->where($db->quoteName('a.state') . ' = 1');
+$query->where($db->quoteName('b.state') . ' = 1');
+$query->where($db->quoteName('c.state') . ' = 1');
+$query->where($db->quoteName('d.state') . ' = 1');
+$query->where($db->quoteName('e.state') . ' = 1');
+$query->where($db->quoteName('f.state') . ' = 1');
+
+
+$group = array('a.exported_id','a.voucher');
+$query->group($group);
+
+	//$query->group($report_base);
+$query->order($db->quoteName('a.exported_id') . ' DESC');
+
 	//echo $query->__toString();	
 // Reset the query using our newly populated query object.
 $db->setQuery($query);

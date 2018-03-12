@@ -108,12 +108,13 @@ if ($task == "refund") {
 		$post_code = array();
 		foreach ($exel_request as $key=> $item) {
 			$date = date("Y-m-d"); // current date
-			$exchange_date = " +35 day";
+			$exchange_date = " +60 day";
 			$date2 = strtotime(date("Y-m-d", strtotime($date)) . $exchange_date);
 			$date2 = date("Y-m-d", $date2);
 			$codes = OnecardHelper::export_codes_by_voucher($item->voucher, $date2, $item->quantity, $active_code);
 			if ($codes && count($codes) >= $item->quantity) {
 				$codes_text = array();
+			$no_code =0;
 				foreach ($codes as $code) {
 					if ($code->serial)
 						$codes_text[] = 'Voucher(' . $code->code . ')/PIN(' . $code->serial . ')';
@@ -121,10 +122,10 @@ if ($task == "refund") {
 						$codes_text[] = $code->code;
 
 					if ($code->type == 2){
-						$no_code = 1;
+						$no_code = 2;
 					}
 					if ($code->type == 3) {
-						$no_code = 1;
+						$no_code = 3;
 					}	
 					$active_code[] = $code->id;
 					if ($code->eventoc_export) {
@@ -145,8 +146,15 @@ if ($task == "refund") {
 					
 
 				}
+				if ($no_code == 2) {
+					$exel_request[$key]->code = "Voucher giấy";
+				}else if ($no_code == 3) {
+				$exel_request[$key]->code = "Sản phẩm";
+				}
+					else {
+					$exel_request[$key]->code = implode(",", $codes_text);
+				}
 				
-				$exel_request[$key]->code = implode(",", $codes_text);
 					
 					
 				
@@ -552,7 +560,7 @@ echo $this->form->renderField('list_templates'); ?>
 	function doExport ($fileExcel, $export_id){
 		require_once (JPATH_COMPONENT . '/libs/simplexlsx.class.php');
 		$xlsx = new SimpleXLSX($fileExcel);
-		$rows = $xlsx->rows(2);
+		$rows = $xlsx->rows(1);
 		$remove_row = 0;
 		$store_data = array();
 		$values = array();

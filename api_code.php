@@ -272,6 +272,14 @@ function export_codes_by_eventoc($data)
 {
 
 	$order = $data->cart;
+	// VOUCHER WEFIT FREE
+	if ($order->total_price > 200000) {
+		$expired_wefit = date('Y-m-d', strtotime("+30 days"));
+		$code_wefit = get_codes(114, $expired_wefit, 1);	
+		$content = "ONECARD gui tang quy khach ma giam gia ". $code_wefit[0]->code." - menh gia 300.000 vnd - HSD: 08/05/2018 Tai Ung Dung Phong Tap WeFit - Goi tap 01 thang - Hotline: 1900 1748";
+		if ($code_wefit)
+			$sms_free = sendSMS($content, $order->phone);
+	}
 	$items = $data->orders;
 		
 	//var_dump($data);		
@@ -372,6 +380,20 @@ function export_codes_by_eventoc($data)
 			$sms_return[$key] = sendSMS($content, $order->phone);
 	}
 	//postCurl('https://onecard.ycar.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+	
+	// add wefit
+	if ($code_wefit) {
+		$json_array[$i+1] = '"list_templates' . $i+1 . '" : {"voucher" :"114" , "price" :"0" , "number" :"1" , "expired" : "30"}';
+		$export_detail_wefit = new stdClass();
+		$export_detail_wefit->exported_id = $export->id;
+		$export_detail_wefit->exported_code = 1;
+		$export_detail_wefit->voucher = 114;
+		$export_detail_wefit->number = 1;
+		$export_detail_wefit->price = 0;
+		$export_detail_wefit->is_onecard = 1;
+		//$export_detail_wefit->event_id = $item->event->id;
+		$import_export_wefit_detail = JFactory::getDbo()->insertObject('#__onecard_export_voucher_detail', $export_detail_wefit);
+	}
 	$json_text = implode(",", $json_array);
 	$json_data .= $json_text;
 	$json_data .= "}";

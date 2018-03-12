@@ -795,7 +795,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 		//echo $query->__toString();
 		// Load the results as a list of stdClass objects (see later for more options on retrieving data).
 		$exported = $db->loadObjectList();	
-		//Onecardhelper::log_sql("export_codes_by_voucher",$query->__toString());
+		Onecardhelper::log_sql("export_codes_by_voucher",$query->__toString());
 		return ($exported);
 
 	}

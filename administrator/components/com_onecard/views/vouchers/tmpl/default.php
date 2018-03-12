@@ -199,6 +199,7 @@ if (!empty($this->extra_sidebar))
                 </tr>
                 </tfoot>
                 <tbody>
+                    
                 <?php foreach ($this->items as $i => $item) :
                     $ordering   = ($listOrder == 'a.ordering');
                     $canCreate  = $user->authorise('core.create', 'com_onecard');

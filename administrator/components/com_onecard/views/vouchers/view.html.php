@@ -65,9 +65,13 @@ class OnecardViewVouchers extends JViewLegacy
         $state = $this->get('State');
         $canDo = OnecardHelpersOnecard::getActions();
 		$toolbar = JToolBar::getInstance('toolbar');
-		$layout = new JLayoutFile('joomla.toolbar.popup');
-        JToolBarHelper::title(JText::_('COM_ONECARD_TITLE_VOUCHERS'), 'vouchers.png');
+        $layout = new JLayoutFile('joomla.toolbar.popup');
 
+        $dhtml = $layout->render(array('name' => 'test', 'doTask' => '', 'text' => JText::_('Download'), 'class' => 'icon-download'));
+        
+        $toolbar->appendButton('Custom', $dhtml);
+        JToolBarHelper::title(JText::_('COM_ONECARD_TITLE_VOUCHERS'), 'vouchers.png');
+ 
         // Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/voucher';
 
@@ -76,6 +80,7 @@ class OnecardViewVouchers extends JViewLegacy
             if ($canDo->get('core.create'))
             {
                 JToolBarHelper::addNew('voucher.add', 'JTOOLBAR_NEW');
+                
                 JToolbarHelper::custom('vouchers.duplicate', 'copy.png', 'copy_f2.png', 'JTOOLBAR_DUPLICATE', true);
             }
 
@@ -84,7 +89,6 @@ class OnecardViewVouchers extends JViewLegacy
                 JToolBarHelper::editList('voucher.edit', 'JTOOLBAR_EDIT');
             }
         }
-
         if ($canDo->get('core.edit.state'))
         {
             if (isset($this->items[0]->state))
@@ -130,7 +134,7 @@ class OnecardViewVouchers extends JViewLegacy
         {
             JToolBarHelper::preferences('com_onecard');
         }
-
+        
         // Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_onecard&view=vouchers');
 
