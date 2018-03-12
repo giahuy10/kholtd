@@ -273,10 +273,10 @@ function export_codes_by_eventoc($data)
 
 	$order = $data->cart;
 	// VOUCHER WEFIT FREE
-	if ($order->total_price < 200000) {
+	if ($order->total_price >= 200000) {
 		$expired_wefit = date('Y-m-d', strtotime("+30 days"));
 		$code_wefit = get_codes(114, $expired_wefit, 1);	
-		$content = "ONECARD gui tang quy khach ma giam gia ". $code_wefit[0]->code." - menh gia 300.000 vnd - HSD: ". $expired_wefit ." Tai Ung Dung Phong Tap WeFit - Goi tap 01 thang - Hotline: 1900 1748";
+		$content = "ONECARD gui tang quy khach ma giam gia ". $code_wefit[0]->code." - menh gia 300.000 vnd - HSD: ". date('d-m-Y', strtotime("+30 days")) ." Tai Ung Dung Phong Tap WeFit - Goi tap 01 thang - Hotline: 1900 1748";
 		if ($code_wefit)
 			$sms_free = sendSMS($content, $order->phone);
 	}
