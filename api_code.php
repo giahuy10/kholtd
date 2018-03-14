@@ -600,7 +600,20 @@ switch ($task) {
 	case "get":
 		$response = export_codes_by_eventoc($data);
 		log_api("code", "get", $data, $response);
-
+		break;
+	case "check_quantity":
+		$event_id = $data->item->id;
+		$max_sell = $data->item->max_sell;
+		$voucher_id = get_voucher_id($event_id);
+		if ($voucher_id) {
+			$response['status'] = 1;
+			$response['message'] = "Success";
+			$response['data'] = get_number_of_codes($voucher_id, $event_id, $max_sell, 0);
+		} else {
+			$response['status'] = -1;
+			$response['message'] = "Error: Không tìm thấy sự kiện";
+			$response['data'] = null;
+		}
 		break;
 	default:
 		echo "ok";
