@@ -430,8 +430,22 @@ function get_voucher_detail($voucher_id)
 
 	return ($results);
 }
-function get_number_of_codes($voucher_id, $event_id, $max_sell, $current_quan)
+function get_number_of_codes($voucher_id, $event_id, $max_sell, $expried, $exprie_type, $current_quan)
 {
+	if ($expried) {
+		$check_date = date("Y-m-d", $expried);
+	}elseif ($exprie_type) {
+		$date = date("Y-m-d");// current date
+		$exchange_date = " +" . $exprie_type . " day";
+		$date2 = strtotime(date("Y-m-d", strtotime($date)) . $exchange_date);
+		$check_date = date("Y-m-d", $date2);
+		
+	}else {
+		$date = date("Y-m-d");// current date
+		$exchange_date = " + 30 day";
+		$date2 = strtotime(date("Y-m-d", strtotime($date)) . $exchange_date);
+		$check_date = date("Y-m-d", $date2);
+	}
 	// Get a db connection.
 	$db = JFactory::getDbo();
 
@@ -445,7 +459,8 @@ function get_number_of_codes($voucher_id, $event_id, $max_sell, $current_quan)
 	$query->where($db->quoteName('voucher') . ' = ' . $voucher_id);
 	$query->where($db->quoteName('status') . ' = 1');
 	$query->where($db->quoteName('state') . ' = 1');
-
+	//$query->where($db->quoteName('expired') . ' > '. $check_date);
+	$query->where($db->quoteName('expired') . ' >= ' . $db->quote($check_date));
 // Reset the query using our newly populated query object.
 	$db->setQuery($query);
 	$db->execute();
@@ -525,7 +540,7 @@ function get_quantity($data)
 	foreach ($data as $x => $item) {
 		$voucher_id = get_voucher_id($item->id);
 		if ($voucher_id) {
-			$item->quantity = get_number_of_codes($voucher_id, $item->id, $item->max_sell, 0);
+			$item->quantity = get_number_of_codes($voucher_id, $item->id, $item->max_sell, $item->expried, $item->exprie_type, 0);
 			$item->voucher = $voucher_id;
 		}
 		$response[$x] = $item;
@@ -533,6 +548,50 @@ function get_quantity($data)
 	}
 
 	return $response;
+}
+function login ($data) {
+	// Hardcoded for now
+	$credentials['username'] = $data->username;
+	$credentials['password'] = $data->password;
+
+	
+
+// Get a database object
+	$db = JFactory::getDbo();
+	$query = $db->getQuery(true)
+		->select('id, password')
+		->from('#__users')
+		->where('username=' . $db->quote($credentials['username']));
+
+	$db->setQuery($query);
+	$result = $db->loadObject();
+
+	if ($result) {
+		$match = JUserHelper::verifyPassword($credentials['password'], $result->password, $result->id);
+
+		if ($match === true) {
+        // Bring this in line with the rest of the system
+			$user = JUser::getInstance($result->id);
+			$response['status'] = 1;
+			$response['message'] = 'Thành công';
+			$response['data'] = $user;
+		} else {
+        // Invalid password
+        // Prmitive error handling
+			$response['status'] = 0;
+			$response['message'] = 'Sai password';
+			$response['data'] = null;
+		}
+	} else {
+    // Invalid user
+	// Prmitive error handling
+		$response['status'] = 0;
+		$response['message'] = 'Không tìm thấy tài khoản';
+		$response['data'] = NULL;
+		
+	}
+	return $response;
+
 }
 //$response = array();
 switch ($task) {
@@ -546,6 +605,14 @@ switch ($task) {
 
 		]
 	 */
+			
+	case "login":
+			$response = login($data);
+			$credentials = array('username' => $data->username, 'password' => $data->password);
+			$login_site = JFactory::getApplication('site');
+			$response = $login_site->login($credentials, $options = array());
+			//var_dump ($response);
+			break;
 	case "check":
 		$merchant_id = $data->merchant_id;
 		$codes =  JRequest::getVar('code');
@@ -568,6 +635,8 @@ switch ($task) {
 	case "number":
 		$event_id = $data->event_id;
 		$max_sell = $data->max_sell;
+		$expired = $data->expried;
+		$expired_type = $data->exprie_type;
 		$double_code = $data->double_code;
 		$cart = $data->cart;
 		$type = $data->type;
@@ -581,7 +650,7 @@ switch ($task) {
 		if ($voucher_id) {
 			$response['status'] = 1;
 			$response['message'] = "Success";
-			$response['data'] = get_number_of_codes($voucher_id, $event_id, $max_sell, $current_quan);
+			$response['data'] = get_number_of_codes($voucher_id, $event_id, $max_sell, $expired, $expired_type, $current_quan);
 		} else {
 			$response['status'] = -1;
 			$response['message'] = "Error: Không tìm thấy sự kiện";
