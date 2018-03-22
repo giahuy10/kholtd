@@ -593,6 +593,36 @@ function login ($data) {
 	return $response;
 
 }
+function get_list_voucher(){
+	$db = JFactory::getDbo();
+
+// Create a new query object.
+	$query = $db->getQuery(true);
+
+// Select all articles for users who have a username which starts with 'a'.
+// Order it by the created date.
+// Note by putting 'a' as a second parameter will generate `#__content` AS `a`
+	$query
+		->select(array('b.id', 'b.title', 'b.description', 'count(*) as quantity'))
+		->from($db->quoteName('#__onecard_code', 'a'))
+		->join('INNER', $db->quoteName('#__onecard_voucher', 'b') . ' ON (' . $db->quoteName('a.voucher') . ' = ' . $db->quoteName('b.id') . ')')
+		->where($db->quoteName('a.state') . ' = 1')
+		->where($db->quoteName('a.status') . ' = 1')
+		->where($db->quoteName('b.state') . ' = 1')
+		->group($db->quoteName('a.voucher'))
+		->order($db->quoteName('b.title') . ' ASC');
+
+// Reset the query using our newly populated query object.
+	$db->setQuery($query);
+
+// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+	$results = $db->loadObjectList();
+	$response['status'] = 1;
+	$response['message'] = 'Success';
+	$response['data'] = $results;
+	//echo "123123123";
+	return $response;
+}
 //$response = array();
 switch ($task) {
 
@@ -605,7 +635,12 @@ switch ($task) {
 
 		]
 	 */
-			
+	case "list_voucher":
+		//echo "ok23";
+		$response = get_list_voucher();
+		
+		
+		break;		
 	case "login":
 			$response = login($data);
 			$credentials = array('username' => $data->username, 'password' => $data->password);
