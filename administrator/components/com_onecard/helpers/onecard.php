@@ -969,7 +969,8 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 									'item_id' => $export_id,
 									'price' => $voucher_detail->value,
 									'cart_detail_id' => 82,
-									'customer_id' => 1
+									'customer_id' => 1,
+									'note'=>''
 								);
 					$need_change_status[] = $item->id;
 								//$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
@@ -1005,7 +1006,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 
 				}
 		$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
-		Onecardhelper::log_sql("post_url", $result_post);
+		Onecardhelper::log_sql("export_code_from_stock", json_encode($post_code));
 	}
 	
 	public static function log_sql ($function_name, $query) {

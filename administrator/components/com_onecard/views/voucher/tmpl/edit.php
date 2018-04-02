@@ -103,6 +103,7 @@ $document->addStyleSheet(JUri::root() . 'media/com_onecard/css/form.css');
 							$query->select('COUNT(*) as total, created, expired, status, input_price');
 							$query->from($db->quoteName('#__onecard_code'));
 							$query->where($db->quoteName('voucher') . ' = ' . $this->item->id);
+						$query->where($db->quoteName('state') . ' = 1');
 							$query->group(array('created', 'input_price','expired'));
 							$db->setQuery($query);
 					//Onecardhelper::log_sql("get_code_need_renew",$query->__toString());

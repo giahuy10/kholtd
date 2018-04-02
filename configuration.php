@@ -37,7 +37,7 @@ class JConfig {
 	public $lifetime = '60';
 	public $list_limit = '20';
 	public $live_site = '';
-	public $log_path = '/var/www/kho/public_html/administrator/logs';
+	public $log_path = '/Applications/XAMPP/xamppfiles/htdocs/kho/site-stock.ycar.vn-20171109-140036/administrator/logs';
 	public $mailer = 'mail';
 	public $mailfrom = 'admin@stock.ltdvietnam.com';
 	public $memcache_compress = '0';
@@ -65,7 +65,7 @@ class JConfig {
 	public $smtpport = '25';
 	public $smtpsecure = 'none';
 	public $smtpuser = '';
-	public $tmp_path = '/home/ltdf97ac666/public_html/stock/tmp';
+	public $tmp_path = '/Applications/XAMPP/xamppfiles/htdocs/kho/site-stock.ycar.vn-20171109-140036/tmp';
 	public $unicodeslugs = '0';
 	public $user = 'eddy';
 	public $mailonline = '1';

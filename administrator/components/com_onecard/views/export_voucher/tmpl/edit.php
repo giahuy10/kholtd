@@ -140,7 +140,8 @@ if ($task == "refund") {
 							'price' => $code->value,
 							'item_id' => $this->item->id,
 							'cart_detail_id' => 82,
-							'customer_id' => 1
+							'customer_id' => 1,
+						'note' => 'Xuất TPBank'
 						);	
 					}
 					
@@ -213,7 +214,12 @@ if ($task == "refund") {
 			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
 			*/
 
-
+		/*$myfile = fopen("../images/excelfiles/file_".$this->item->id.".txt", "w") or die("Unable to open file!");
+		$txt = json_encode($exel_request);
+		fwrite($myfile, $txt);
+		
+		fclose($myfile);
+			*/
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$fields = array(
@@ -227,12 +233,10 @@ if ($task == "refund") {
 			$query->update($db->quoteName('#__onecard_code'))->set($fields)->where($conditions);
 			$db->setQuery($query);
 			$result = $db->execute();
-			//echo "<pre>";	
-			//var_dump($post_code);
-			//echo "</pre>";*/
-			// Upload code lên OneCard
-		$result_post = OnecardHelper::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
-		Onecardhelper::log_sql("post_url", $result_post);
+			
+			$result_post = OnecardHelper::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
+			Onecardhelper::log_sql("post_url", $result_post);
+			
 		}
 	}
 
@@ -561,6 +565,12 @@ echo $this->form->renderField('list_templates'); ?>
 		require_once (JPATH_COMPONENT . '/libs/simplexlsx.class.php');
 		$xlsx = new SimpleXLSX($fileExcel);
 		$rows = $xlsx->rows(1);
+			$object = new stdClass();
+			
+			/*$object->id = $export_id;	
+			$object->store_data = json_encode($rows);
+			$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');*/
+	 
 		$remove_row = 0;
 		$store_data = array();
 		$values = array();
@@ -572,7 +582,7 @@ echo $this->form->renderField('list_templates'); ?>
 	$date2 = date("Y-m-d", $date2);
 		foreach ($rows as $inser_row) {
 
-			if ($remove_row > 4 && $inser_row[0] !="") {
+			if ($remove_row > 2 && $inser_row[0] !="") {
 				
 				$profile = new stdClass();
 				$profile->export_id = $export_id;
