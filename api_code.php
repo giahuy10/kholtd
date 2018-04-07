@@ -1,4 +1,6 @@
-<?php header('Access-Control-Allow-Origin: *'); ?>
+<?php
+sleep(900);
+header('Access-Control-Allow-Origin: *'); ?>
 <?php
 
 header('Content-Type: application/json');
