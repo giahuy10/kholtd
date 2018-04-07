@@ -704,7 +704,7 @@ switch ($task) {
 		log_api("code", "getquantity", $data, $response);
 		break;
 	case "get":
-		sleep(900);
+		//sleep(900);
 		$response = export_codes_by_eventoc($data);
 		log_api("code", "get", $data, $response);
 		break;
