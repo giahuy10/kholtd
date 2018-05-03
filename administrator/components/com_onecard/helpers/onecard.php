@@ -1006,7 +1006,7 @@ vlDLIfFJBiZzSUA9pehf0k6mpvZ/BN5VpHASIJl5R7Bpz1U='; // Private key
 
 				}
 		$result_post = self::postCurl('https://onecard.vn/api.php?act=cart&code=export_code_from_stock', json_encode($post_code));
-		Onecardhelper::log_sql("export_code_from_stock", json_encode($post_code));
+		Onecardhelper::log_sql("post_code_". $export_id, json_encode($post_code));
 	}
 	
 	public static function log_sql ($function_name, $query) {

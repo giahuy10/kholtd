@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_tags
  *
- * @copyright   Copyright (C) 2005 - 2017 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -92,7 +92,7 @@ class TagsViewTag extends JViewLegacy
 				$itemElement->event = new stdClass;
 
 				// For some plugins.
-				!empty($itemElement->core_body)? $itemElement->text = $itemElement->core_body : $itemElement->text = null;
+				!empty($itemElement->core_body) ? $itemElement->text = $itemElement->core_body : $itemElement->text = null;
 
 				$dispatcher = JEventDispatcher::getInstance();
 
@@ -150,7 +150,7 @@ class TagsViewTag extends JViewLegacy
 		{
 			$currentLink = $active->link;
 
-			// If the current view is the active item and an tag view for one tag, then the menu item params take priority
+			// If the current view is the active item and a tag view for one tag, then the menu item params take priority
 			if (strpos($currentLink, 'view=tag') && strpos($currentLink, '&id[0]=' . (string) $item[0]->id))
 			{
 				// $item[0]->params are the tag params, $temp are the menu item params

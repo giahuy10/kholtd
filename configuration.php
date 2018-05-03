@@ -20,7 +20,7 @@ class JConfig {
 	public $debug_lang = '0';
 	public $display_offline_message = '1';
 	public $editor = 'tinymce';
-	public $error_reporting = 'none';
+	public $error_reporting = 'maximum';
 	public $feed_email = 'none';
 	public $feed_limit = '10';
 	public $force_ssl = '0';
@@ -94,4 +94,9 @@ class JConfig {
 	public $session_memcached_server_port = '11211';
 	public $frontediting = '1';
 	public $asset_id = '1';
+	public $session_redis_persist = '1';
+	public $session_redis_server_host = 'localhost';
+	public $session_redis_server_port = '6379';
+	public $session_redis_server_auth = '';
+	public $session_redis_server_db = '0';
 }

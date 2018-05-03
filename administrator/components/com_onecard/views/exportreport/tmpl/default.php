@@ -99,7 +99,7 @@ $query = $db->getQuery(true);
 	$query->where($db->quoteName('d.state') . ' = 1');
 	$query->where($db->quoteName('e.state') . ' = 1');
 	$query->where($db->quoteName('f.state') . ' = 1');
-    
+     
 	
 	//$query->group($report_base);
 	$query->order($db->quoteName('a.exported_id') . ' DESC');
@@ -326,7 +326,7 @@ $results = $db->loadObjectList();
 			$row_export->type = OnecardHelper::get_type_name($result->type);
 			$row_export->unit = ($result->unit == 2 ? "OneCard" : "NCC");
 			$row_export->partner = $result->partner;
-			$row_export->event = $result->vouceventher_id;
+			$row_export->event = $result->event;
 			$row_export->exported_date = $result->exported_date;
 		?>
 		<?php $excel_data[$index] = $row_export;
