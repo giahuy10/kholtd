@@ -132,7 +132,7 @@ if ($type)
 if ($unit)
 	$query->where($db->quoteName('c.unit') . ' = ' . $unit);
 if ($is_onecard == 2)
-	$query->where($db->quoteName('a.is_onecard') . ' = 1');
+	//$query->where($db->quoteName('b.is_onecard') . ' = 1');
 	//$query->where($db->quoteName('a.state') . ' = 1');
 $query->where($db->quoteName('b.state') . ' = 1');
 $query->where($db->quoteName('c.state') . ' = 1');

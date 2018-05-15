@@ -563,7 +563,8 @@ echo $this->form->renderField('list_templates'); ?>
 	function doExport ($fileExcel, $export_id){
 		require_once (JPATH_COMPONENT . '/libs/simplexlsx.class.php');
 		$xlsx = new SimpleXLSX($fileExcel);
-		$rows = $xlsx->rows(1);
+		$rows = $xlsx->rows();
+		var_dump($rows);
 			$object = new stdClass();
 			
 			/*$object->id = $export_id;	
@@ -610,7 +611,7 @@ echo $this->form->renderField('list_templates'); ?>
 		
 			
 		}
-		$values_insert = implode(",",$values);
+	$values_insert = implode(",",$values);
 	$values_detail_insert = implode(",", $values_detail);
 		$db = JFactory::getDbo();
 		$query = "
@@ -637,6 +638,7 @@ echo $this->form->renderField('list_templates'); ?>
 		//$object->store_data = 43;
 		$result = JFactory::getDbo()->updateObject('#__onecard_export_voucher', $object, 'id');
 		header("Location: index.php?option=com_onecard&view=export_voucher&layout=edit&id=". $export_id);
+	
 	}	
 	function doExport_old($fileExcel, $voucher_id, $expired, $export_id){
   		
